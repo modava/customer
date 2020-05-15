@@ -1,6 +1,6 @@
 {
-  "name": "modava/article",
-  "description": "Article Modava",
+  "name": "modava/customer",
+  "description": "Customer Modava",
   "keywords": [
     "yii2",
     "helper"
@@ -9,13 +9,14 @@
   "license": "BSD-3-Clause",
   "support": {
     "wiki": "http://www.yiiframework.com/wiki/",
-    "source": "https://github.com/modava/article"
+    "source": "https://github.com/modava/customer"
   },
   "authors": [
     {
       "name": "Mong Dao",
       "email": "mongdaovan86@yahoo.com",
-      "homepage": "https://modava.com.vn/"
+      "homepage": "https://modava.com.vn/",
+      "role": "Developer"
     }
   ],
   "require": {
@@ -27,7 +28,7 @@
   },
   "autoload": {
     "psr-4": {
-      "modava\\article\\": "src"
+      "modava\\customer\\": "src"
     }
   },
   "minimum-stability": "dev"
