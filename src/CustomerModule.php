@@ -25,13 +25,13 @@ class CustomerModule extends Module implements BootstrapInterface
     public function init()
     {
         // custom initialization code goes here
+        $this->registerTranslations();
         parent::init();
         Yii::configure($this, require(__DIR__ . '/config/customer.php'));
         $handler = $this->get('errorHandler');
         Yii::$app->set('errorHandler', $handler);
         $handler->register();
         $this->layout = 'customer';
-        $this->registerTranslations();
     }
 
     public function bootstrap($app)
