@@ -12,7 +12,7 @@ use yii\web\Controller;
 /**
  * Article module definition class
  */
-class Customer extends Module implements BootstrapInterface
+class CustomerModule extends Module implements BootstrapInterface
 {
     /**
      * {@inheritdoc}
