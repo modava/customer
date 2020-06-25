@@ -1,8 +1,5 @@
 <?php
-
-
 namespace modava\customer\components;
-
 
 use backend\components\MyController;
 

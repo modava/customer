@@ -1,8 +1,5 @@
 <?php
-
-
 namespace modava\customer\components;
-
 
 use modava\imagick\Imagick;
 use yii\base\Component;

@@ -1,12 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Kem Bi
- * Date: 06-Jul-18
- * Time: 4:00 PM
- */
-
-use modava\article\components\MyErrorHandler;
+use modava\customer\components\MyErrorHandler;
 
 $config = [
     'defaultRoute' => 'customer/index',

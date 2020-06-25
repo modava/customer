@@ -10,17 +10,17 @@ use yii\web\Application;
 use yii\web\Controller;
 
 /**
- * Article module definition class
+ * customer module definition class
  */
 class CustomerModule extends Module implements BootstrapInterface
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public $controllerNamespace = 'modava\customer\controllers';
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function init()
     {
@@ -33,6 +33,8 @@ class CustomerModule extends Module implements BootstrapInterface
         $handler->register();
         $this->layout = 'customer';
     }
+
+
 
     public function bootstrap($app)
     {
@@ -51,7 +53,7 @@ class CustomerModule extends Module implements BootstrapInterface
             'sourceLanguage' => 'en',
             'basePath' => '@modava/customer/messages',
             'fileMap' => [
-                'article/messages/customer' => 'customer.php',
+                'customer/messages/customer' => 'customer.php',
             ],
         ];
     }
@@ -60,5 +62,4 @@ class CustomerModule extends Module implements BootstrapInterface
     {
         return Yii::t('customer/messages/' . $category, $message, $params, $language);
     }
-
 }

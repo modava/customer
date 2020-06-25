@@ -1,7 +1,5 @@
 <?php
-
 namespace modava\customer\components;
-
 
 class MyErrorHandler extends \yii\web\ErrorHandler
 {
