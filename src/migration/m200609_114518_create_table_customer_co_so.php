@@ -3,9 +3,9 @@
 use yii\db\Migration;
 
 /**
- * Class m200625_045329_create_table_customer_co_so
+ * Class m200609_114518_create_table_customer_co_so
  */
-class m200625_045329_create_table_customer_co_so extends Migration
+class m200609_114518_create_table_customer_co_so extends Migration
 {
     /**
      * {@inheritdoc}
@@ -45,7 +45,7 @@ class m200625_045329_create_table_customer_co_so extends Migration
      */
     public function safeDown()
     {
-        echo "m200625_045329_create_table_customer_co_so cannot be reverted.\n";
+        echo "m200609_114518_create_table_customer_co_so cannot be reverted.\n";
 
         return false;
     }
@@ -59,7 +59,7 @@ class m200625_045329_create_table_customer_co_so extends Migration
 
     public function down()
     {
-        echo "m200625_045329_create_table_customer_co_so cannot be reverted.\n";
+        echo "m200609_114518_create_table_customer_co_so cannot be reverted.\n";
 
         return false;
     }
