@@ -201,6 +201,7 @@ if(Yii::$app->controller->action->id == 'create') {
                     <span id="product-tong-tien"><?= $model->total - $model->discount ?></span>đ
                 </div>
             </div>
+            <?= $form->field($model, 'total', ['template' => '{error}'])->textInput()->label(false) ?>
         </div>
     </div>
     <div class="form-group">
@@ -227,6 +228,10 @@ function handleOrderRow(row){
             discount_by = row.find('.product-discount-by').val() + '' || '$discount_by_money',
             total_price = price * qty,
             total_discount;
+        if(discount_by == '$discount_by_percent' && discount > 100) {
+            discount = 100;
+            row.find('.product-discount').val(discount);
+        }
         if(discount_by === '$discount_by_money') {
             total_discount = discount;
         } else {

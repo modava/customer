@@ -27,13 +27,14 @@ class m200617_084210_create_table_customer_treatment_schedule extends Migration
                 'time_start' => $this->integer(11)->null()->comment('Thời gian bắt đầu'),
                 'time_end' => $this->integer(11)->null()->comment('Thời gian kết thúc'),
                 'note' => $this->string(500)->null()->comment('Ghi chú điều trị'),
+                'status' => $this->tinyInteger(1)->null()->defaultValue(0)->comment('Trạng thái lịch điều trị - 0: Chờ xử lý, 1: Đã kết thúc, 2: Đang tiến hành'),
                 'created_at' => $this->integer(11)->null(),
                 'updated_at' => $this->integer(11)->null(),
                 'created_by' => $this->integer(11)->null()->defaultValue(1),
                 'updated_by' => $this->integer(11)->null()->defaultValue(1),
             ], $tableOptions);
             $this->addForeignKey('fk_customer_treatment_schedule_order_id_customer_order', 'customer_treatment_schedule', 'order_id', 'customer_order', 'id', 'RESTRICT', 'CASCADE');
-            $this->addForeignKey('fk_customer_treatment_schedule_co_so_setting_co_so', 'customer_treatment_schedule', 'co_so', 'setting_co_so', 'id', 'RESTRICT', 'CASCADE');
+            $this->addForeignKey('fk_customer_treatment_schedule_co_so_customer_co_so', 'customer_treatment_schedule', 'co_so', 'customer_co_so', 'id', 'RESTRICT', 'CASCADE');
             $this->addForeignKey('fk_customer_treatment_schedule_created_by_user', 'customer_treatment_schedule', 'created_by', 'user', 'id', 'RESTRICT', 'CASCADE');
             $this->addForeignKey('fk_customer_treatment_schedule_updated_by_user', 'customer_treatment_schedule', 'updated_by', 'user', 'id', 'RESTRICT', 'CASCADE');
         }

@@ -4,6 +4,7 @@ namespace modava\customer\models;
 
 use modava\customer\models\table\CustomerStatusCallTable;
 use modava\customer\models\table\CustomerStatusDatHenTable;
+use modava\customer\models\table\CustomerStatusDongYTable;
 use modava\customer\models\table\CustomerTable;
 use yii\behaviors\AttributeBehavior;
 use yii\db\ActiveRecord;
@@ -65,8 +66,7 @@ class Clinic extends Customer
             'time_come' => [
                 'class' => AttributeBehavior::class,
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => ['time_come'],
-                    ActiveRecord::EVENT_BEFORE_UPDATE => ['time_come']
+                    ActiveRecord::EVENT_BEFORE_VALIDATE => ['time_come'],
                 ],
                 'value' => function () {
                     if ($this->time_come == null) return null;
@@ -99,6 +99,26 @@ class Clinic extends Customer
             }, 'whenClient' => "function(){
                 return '" . $this->primaryKey . "' == '';
             }"],
+            [['status_dat_hen'], 'validateStatusDatHen'],
+            [['status_dong_y'], 'validateStatusDongY']
         ];
+    }
+
+    public function validateStatusDatHen()
+    {
+        if (!$this->hasErrors()) {
+            $old_status_dat_hen = CustomerStatusDatHenTable::getById($this->getOldAttribute('status_dat_hen'));
+            if ($old_status_dat_hen != null && $old_status_dat_hen->accept == CustomerStatusDatHenTable::STATUS_PUBLISHED && $this->statusDatHenHasOne->accept != CustomerStatusDatHenTable::STATUS_PUBLISHED) {
+                $this->addError('status_dat_hen', 'Không thể chuyển trạng thái khách đã đến thành khách không đến');
+            }
+        }
+    }
+
+    public function validateStatusDongY(){
+        if(!$this->hasErrors()){
+            if($this->statusDongYHasOne != null && $this->statusDongYHasOne->accept != CustomerStatusDongYTable::STATUS_PUBLISHED && count($this->orderHasMany) > 0){
+                $this->addError('status_dong_y', 'Khách đã tạo đơn hàng, không thể chuyển về trạng thái không đồng ý');
+            }
+        }
     }
 }

@@ -20,7 +20,7 @@ use modava\location\models\table\LocationWardTable;
 use modava\customer\models\table\CustomerAgencyTable;
 use modava\customer\models\table\CustomerOriginTable;
 use modava\customer\models\table\CustomerFanpageTable;
-use modava\settings\models\table\SettingCoSoTable;
+use modava\customer\models\table\CustomerCoSoTable;
 
 /* @var $this yii\web\View */
 /* @var $model modava\customer\models\SalesOnline */
@@ -219,7 +219,7 @@ $status_call_accept = ArrayHelper::map(CustomerStatusCallTable::getStatusCallDat
                     ]) ?>
                 </div>
                 <div class="col-md-6 col-12">
-                    <?= $form->field($model, 'co_so')->dropDownList(ArrayHelper::map(SettingCoSoTable::getAllCoSo(), 'id', 'name'), [
+                    <?= $form->field($model, 'co_so')->dropDownList(ArrayHelper::map(CustomerCoSoTable::getAllCoSo(), 'id', 'name'), [
                         'prompt' => 'Cơ sở...'
                     ]) ?>
                 </div>

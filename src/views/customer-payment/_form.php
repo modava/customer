@@ -81,19 +81,28 @@ $model->payment_at = ($model->payment_at != null && is_numeric($model->payment_a
             <div class="row">
                 <div class="col-md-6 col-sm-6 col-12"></div>
                 <div class="col-md-3 col-sm-6 col-12 text-right">
-                    Đặt cọc:
+                    Chiết khấu:
                 </div>
                 <div class="col-md-3 col-sm-6 col-12 text-right">
-                    <strong id="payment-dat-coc"></strong>
+                    <strong id="payment-chiet-khau"></strong>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6 col-sm-6 col-12"></div>
                 <div class="col-md-3 col-sm-6 col-12 text-right">
-                    Chiết khấu:
+                    Tạm tính:
                 </div>
                 <div class="col-md-3 col-sm-6 col-12 text-right">
-                    <strong id="payment-chiet-khau"></strong>
+                    <strong id="payment-tam-tinh"></strong>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-sm-6 col-12"></div>
+                <div class="col-md-3 col-sm-6 col-12 text-right">
+                    Đặt cọc:
+                </div>
+                <div class="col-md-3 col-sm-6 col-12 text-right">
+                    <strong id="payment-dat-coc"></strong>
                 </div>
             </div>
             <div class="row">
@@ -173,8 +182,9 @@ function getOrdertInfo(order_id){
         $('#payment-price').val('');
         if(res.code === 200){
             $('#payment-tong-cong').attr('data', res.total).html(res.total);
-            $('#payment-dat-coc').attr('data', res.data_deposit).html(res.deposit);
             $('#payment-chiet-khau').attr('data', res.discount).html(res.discount);
+            $('#payment-tam-tinh').attr('data', res.total - res.discount).html(res.total - res.discount);
+            $('#payment-dat-coc').attr('data', res.data_deposit).html(res.deposit);
             $('#payment-thanh-toan').attr('data', res.data_payment).html(res.payment);
             $('#payment-con-lai').attr('data', res.total - (res.discount + res.deposit + res.payment)).html(res.total - (res.discount + res.deposit + res.payment));
             if(res.data_deposit > 0 && [null, undefined, ''].includes('$payment_id')) {

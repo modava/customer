@@ -19,7 +19,7 @@ function dropdownEffectData(target) {
       dropdownMenu = $('.dropdown-menu', target);
   var parentUl = dropdown.parents('ul.nav'); 
 
-  // If parent is ul.nav allow global effect settings
+  // If parent is ul.nav allow global effect customer
   if (parentUl.length > 0) {
     effectInDefault = parentUl.data('dropdown-in') || null;
     effectOutDefault = parentUl.data('dropdown-out') || null;

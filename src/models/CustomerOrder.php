@@ -8,7 +8,7 @@ use modava\customer\CustomerModule;
 use modava\customer\models\table\CustomerOrderDetailTable;
 use modava\customer\models\table\CustomerOrderTable;
 use modava\product\models\table\ProductTable;
-use modava\settings\models\SettingCoSo;
+use modava\customer\models\CustomerCoSo;
 use yii\behaviors\AttributeBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\db\ActiveRecord;
@@ -31,7 +31,7 @@ use yii\db\Transaction;
  * @property int $created_by
  * @property int $updated_by
  *
- * @property SettingCoSo $coSo
+ * @property CustomerCoSo $coSo
  * @property User $createdBy
  * @property Customer $customer
  * @property User $updatedBy
@@ -88,10 +88,11 @@ class CustomerOrder extends CustomerOrderTable
             [['customer_id'], 'required'],
             [['customer_id', 'status', 'co_so'], 'integer'],
             [['total', 'discount'], 'number'],
-            [['co_so'], 'exist', 'skipOnError' => true, 'targetClass' => SettingCoSo::class, 'targetAttribute' => ['co_so' => 'id']],
+            [['co_so'], 'exist', 'skipOnError' => true, 'targetClass' => CustomerCoSo::class, 'targetAttribute' => ['co_so' => 'id']],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Customer::class, 'targetAttribute' => ['customer_id' => 'id']],
             [['ordered_at', 'order_detail_id', 'product_id', 'qty', 'price', 'total_price', 'discount', 'discount_by', 'reason_discount', 'total'], 'safe'],
-            [['order_detail'], 'validateOrderDetail']
+            [['order_detail'], 'validateOrderDetail'],
+            [['total'], 'validateTotal'],
         ];
     }
 
@@ -144,6 +145,19 @@ class CustomerOrder extends CustomerOrderTable
                         $this->addError("order_detail[$i][$k]", $error);
                     }
                 }
+            }
+        }
+    }
+
+    public function validateTotal()
+    {
+        if (!$this->hasErrors()) {
+            $thanh_toan = 0;
+            foreach ($this->paymentHasMany as $payment) {
+                $thanh_toan += $payment->price;
+            }
+            if($thanh_toan > $this->getAttribute('total') - $this->getAttribute('discount')){
+                $this->addError('total', 'Số tiền đã thanh toán của đơn hàng cao hơn tổng tiền của đơn. Không thể cập nhật');
             }
         }
     }

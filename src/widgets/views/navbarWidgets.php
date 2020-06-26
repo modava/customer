@@ -2,6 +2,7 @@
 
 use yii\helpers\Url;
 use modava\customer\CustomerModule;
+use modava\customer\models\search\SalesOnlineRemindCallSearch;
 
 $is_dev = Yii::$app->user->can('develop');
 ?>
@@ -18,6 +19,7 @@ $is_dev = Yii::$app->user->can('develop');
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'sales-online-remind-call') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer/sales-online-remind-call']); ?>">
                 <i class="ion ion-ios-locate"></i><?= CustomerModule::t('sales-online-remind-call', 'Remind Call'); ?>
+                <div class="badge badge-danger badge-pill"><?= SalesOnlineRemindCallSearch::getSalesOnlineRemindCall(isset($this->params['userRoleName']) && !in_array($this->params['userRoleName'], [])) ? Yii::$app->user->id : null ?></div>
             </a>
         </li>
     <?php } ?>
@@ -104,6 +106,14 @@ $is_dev = Yii::$app->user->can('develop');
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'customer-fanpage') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer/customer-fanpage']); ?>">
                 <i class="ion ion-ios-locate"></i><?= CustomerModule::t('customer', 'Customer Fanpage'); ?>
+            </a>
+        </li>
+    <?php } ?>
+    <?php if ($is_dev || Yii::$app->user->can('customer-co-so')) { ?>
+        <li class="nav-item mb-5">
+            <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'customer-co-so') echo ' active' ?>"
+               href="<?= Url::toRoute(['/customer/customer-co-so']); ?>">
+                <i class="ion ion-ios-locate"></i><?= CustomerModule::t('customer', 'Customer Co So'); ?>
             </a>
         </li>
     <?php } ?>

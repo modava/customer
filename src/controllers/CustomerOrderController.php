@@ -3,6 +3,7 @@
 namespace modava\customer\controllers;
 
 use modava\customer\models\table\CustomerOrderTable;
+use modava\customer\models\table\CustomerPaymentTable;
 use modava\customer\models\table\CustomerStatusDongYTable;
 use modava\customer\models\table\CustomerTable;
 use yii\db\Exception;
@@ -154,7 +155,15 @@ class CustomerOrderController extends MyController
             $model->order_detail = [];
             if (is_array($model->orderDetailHasMany)) {
                 foreach ($model->orderDetailHasMany as $order_detail) {
-                    $model->order_detail[] = $order_detail->getAttributes();
+                    $qty = $order_detail->qty;
+                    $price = $order_detail->price;
+                    $total_price = $qty * $price;
+                    $discount_by = $order_detail->discount_by;
+                    $discount = $discount_by == CustomerPaymentTable::DISCOUNT_BY_PERCENT ? $total_price * $order_detail->discount / 100 : $order_detail->discount;
+                    $model->order_detail[] = array_merge($order_detail->getAttributes(), [
+                        'total_price' => $total_price,
+                        'total' => $qty * $price - $discount
+                    ]);
                 }
             }
         }

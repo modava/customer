@@ -73,13 +73,31 @@ class SalesOnlineRemindCallSearch extends Customer
             return $dataProvider;
         }
 
+        if ($this->permission_user != null) {
+            $query->andFilterWhere([self::tableName() . '.permission_user' => $this->permission_user]);
+        }
+
         // grid filtering conditions
         $query->orderBy([
-            new \yii\db\Expression('FIELD (remind_call_date, ' . strtotime(date('d-m-Y')) . ') DESC, remind_call_time DESC'),
+            new \yii\db\Expression('FIELD (remind_call_date, ' . strtotime(date('d-m-Y')) . ') DESC, remind_call_time ASC'),
             'remind_call_time' => SORT_DESC
         ]);
 //        echo $query->createCommand()->rawSql;die;
 
         return $dataProvider;
+    }
+
+    public static function getSalesOnlineRemindCall($user_id = null)
+    {
+        $today = strtotime(date('d-m-Y'));
+        $query = self::find()
+            ->joinWith(['statusCallHasOne'])
+            ->where(['<>', CustomerStatusCallTable::tableName() . '.accept', CustomerStatusCallTable::STATUS_PUBLISHED])
+            ->andWhere([self::tableName() . '.status_fail' => null])
+            ->andWhere(['BETWEEN', self::tableName().'.remind_call_time', $today, $today + 86399]);
+        if ($user_id != null) {
+            $query->andWhere([self::tableName() . '.permission_user' => $user_id]);
+        }
+        return $query->count();
     }
 }

@@ -7,7 +7,7 @@ use common\models\User;
 use modava\customer\CustomerModule;
 use modava\customer\models\table\CustomerTable;
 use modava\customer\models\table\CustomerTreatmentScheduleTable;
-use modava\settings\models\SettingCoSo;
+use modava\customer\models\CustomerCoSo;
 use yii\behaviors\AttributeBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\db\ActiveRecord;
@@ -27,7 +27,7 @@ use Yii;
  * @property int $created_by
  * @property int $updated_by
  *
- * @property SettingCoSo $coSo
+ * @property CustomerCoSo $coSo
  * @property User $createdBy
  * @property CustomerOrder $order
  * @property User $updatedBy

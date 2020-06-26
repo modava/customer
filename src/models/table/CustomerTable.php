@@ -6,7 +6,6 @@ use backend\modules\user\models\User;
 use cheatsheet\Time;
 use modava\customer\CustomerModule;
 use modava\location\models\table\LocationWardTable;
-use modava\settings\models\table\SettingCoSoTable;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -67,7 +66,12 @@ class CustomerTable extends \yii\db\ActiveRecord
 
     public function getCoSoHasOne()
     {
-        return $this->hasOne(SettingCoSoTable::class, ['id' => 'co_so']);
+        return $this->hasOne(CustomerCoSoTable::class, ['id' => 'co_so']);
+    }
+
+    public function getOrderHasMany()
+    {
+        return $this->hasMany(CustomerOrderTable::class, ['customer_id' => 'id']);
     }
 
     public function afterDelete()

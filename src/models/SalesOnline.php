@@ -3,7 +3,10 @@
 namespace modava\customer\models;
 
 use cheatsheet\Time;
+use modava\customer\CustomerModule;
 use modava\customer\models\table\CustomerTable;
+use modava\customer\models\table\CustomerStatusCallTable;
+use modava\customer\models\table\CustomerStatusFailTable;
 use yii\behaviors\AttributeBehavior;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
@@ -85,6 +88,17 @@ class SalesOnline extends Customer
                 return status_call != null && !" . json_encode(array_values($status_call_dathen)) . ".includes(status_call) && !$('#remind-call').is(':checked');
             }"],
             [['remind_call'], 'safe'],
+            [['status_call'], 'validateStatusCall'],
         ];
+    }
+
+    public function validateStatusCall()
+    {
+        if (!$this->hasErrors()) {
+            $old_status_call = CustomerStatusCallTable::getById($this->getOldAttribute('status_call'));
+            if ($old_status_call != null && $old_status_call->accept == CustomerStatusCallTable::STATUS_PUBLISHED && $this->statusCallHasOne->accept != CustomerStatusCallTable::STATUS_PUBLISHED) {
+                $this->addError('status_call', 'Không thể chuyển trạng thái từ đặt hẹn sang fail');
+            }
+        }
     }
 }
