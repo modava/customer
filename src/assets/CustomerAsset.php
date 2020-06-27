@@ -9,12 +9,12 @@ use yii\web\AssetBundle;
  */
 class CustomerAsset extends AssetBundle
 {
-    public $sourcePath = '@customerweb';
+    public $sourcePath = '@backendWeb';
     public $css = [
+        'vendors/datatables.net-dt/css/jquery.dataTables.min.css',
         'vendors/bootstrap/dist/css/bootstrap.min.css',
         "vendors/jquery-toggles/css/toggles.css",
         "vendors/jquery-toggles/css/themes/toggles-light.css",
-        'css/customCustomer.css',
     ];
     public $js = [
         "vendors/popper.js/dist/umd/popper.min.js",
@@ -24,7 +24,6 @@ class CustomerAsset extends AssetBundle
         "vendors/jquery-toggles/toggles.min.js",
         "dist/js/toggle-data.js",
         "vendors/jasny-bootstrap/dist/js/jasny-bootstrap.min.js",
-        'js/customCustomer.js'
     ];
     public $jsOptions = array(
         'position' => \yii\web\View::POS_END
