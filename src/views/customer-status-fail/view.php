@@ -11,7 +11,7 @@ use modava\customer\CustomerModule;
 /* @var $model modava\customer\models\CustomerStatusFail */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Customer Status Fails'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Trạng thái khách fail'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

@@ -12,7 +12,7 @@ $this->title = CustomerModule::t('customer', 'Create') . ' ' . CustomerModule::t
 if ($model->order_id != null) {
     $this->title .= ': ' . $model->orderHasOne->customerHasOne->name . ' (' . $model->orderHasOne->code . ')';
 }
-$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Customer Payments'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Thanh toán'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="container-fluid px-xxl-25 px-xl-10">

@@ -9,7 +9,7 @@ use modava\customer\CustomerModule;
 /* @var $model modava\customer\models\CustomerPayment */
 
 $this->title = CustomerModule::t('customer', 'Update') . ' ' . CustomerModule::t('customer', 'Payment') . ': ' . $model->orderHasOne->customerHasOne->name . ' (' . $model->orderHasOne->code . ')';
-$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Customer Payments'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Thanh toán'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = CustomerModule::t('customer', 'Update');
 ?>

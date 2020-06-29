@@ -11,7 +11,7 @@ use yii\widgets\Pjax;
 /* @var $searchModel modava\customer\models\search\CustomerAgencySearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = CustomerModule::t('customer', 'Customer Agencies');
+$this->title = CustomerModule::t('customer', 'Agency');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?= ToastrWidget::widget(['key' => 'toastr-' . $searchModel->toastr_key . '-index']) ?>

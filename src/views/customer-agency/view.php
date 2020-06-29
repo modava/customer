@@ -11,7 +11,7 @@ use modava\customer\CustomerModule;
 /* @var $model modava\customer\models\CustomerAgency */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Customer Agencies'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Agency'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

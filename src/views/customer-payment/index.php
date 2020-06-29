@@ -12,7 +12,7 @@ use modava\customer\models\table\CustomerPaymentTable;
 /* @var $searchModel modava\customer\models\search\CustomerPaymentSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = CustomerModule::t('customer', 'Customer Payments');
+$this->title = CustomerModule::t('customer', 'Thanh toán');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?= ToastrWidget::widget(['key' => 'toastr-' . $searchModel->toastr_key . '-index']) ?>

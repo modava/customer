@@ -19,9 +19,11 @@ class CustomerTable extends \yii\db\ActiveRecord
     ];
     const SEX_WOMEN = 0;
     const SEX_MEN = 1;
+    const SEX_OTHER = 2;
     const SEX = [
         self::SEX_WOMEN => 'Nữ',
-        self::SEX_MEN => 'Nam'
+        self::SEX_MEN => 'Nam',
+        self::SEX_OTHER => 'Chưa xác định',
     ];
 
     public static function tableName()

@@ -11,7 +11,7 @@ use yii\widgets\Pjax;
 /* @var $searchModel modava\customer\models\search\CustomerFanpageSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = CustomerModule::t('customer', 'Customer Fanpages');
+$this->title = CustomerModule::t('customer', 'Fanpage facebook');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?= ToastrWidget::widget(['key' => 'toastr-' . $searchModel->toastr_key . '-index']) ?>

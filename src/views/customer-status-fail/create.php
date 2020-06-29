@@ -9,7 +9,7 @@ use modava\customer\CustomerModule;
 /* @var $model modava\customer\models\CustomerStatusFail */
 
 $this->title = CustomerModule::t('customer', 'Create');
-$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Customer Status Fails'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Trạng thái khách fail'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="container-fluid px-xxl-25 px-xl-10">

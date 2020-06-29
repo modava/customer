@@ -12,7 +12,7 @@ use modava\customer\models\table\CustomerTable;
 /* @var $searchModel modava\customer\models\search\SalesOnlineRemindCallSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = CustomerModule::t('customer', 'Customers');
+$this->title = CustomerModule::t('customer', 'Nhắc lịch chăm sóc');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?= ToastrWidget::widget(['key' => 'toastr-' . $searchModel->toastr_key . '-index']) ?>

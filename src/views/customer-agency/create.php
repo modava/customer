@@ -9,7 +9,7 @@ use modava\customer\CustomerModule;
 /* @var $model modava\customer\models\CustomerAgency */
 
 $this->title = CustomerModule::t('customer', 'Create');
-$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Customer Agencies'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Agency'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="container-fluid px-xxl-25 px-xl-10">

@@ -11,7 +11,7 @@ use modava\customer\CustomerModule;
 $this->title = CustomerModule::t('customer', 'Update : {name}', [
     'name' => $model->name,
 ]);
-$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Customer Status Fails'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Trạng thái khách fail'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = CustomerModule::t('customer', 'Update');
 ?>

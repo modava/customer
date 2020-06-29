@@ -83,14 +83,14 @@ $status_call_accept = ArrayHelper::map(CustomerStatusCallTable::getStatusCallDat
             </div>
             <div class="col-md-6 col-12">
                 <?= $form->field($model, 'sex')->dropDownList(CustomerTable::SEX, [
-                    'prompt' => CustomerModule::t('customer', 'Sex')
+                    'prompt' => CustomerModule::t('customer', 'Chọn giới tính...')
                 ]) ?>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6 col-12">
                 <?= $form->field($model, 'country')->dropDownList(ArrayHelper::map(LocationCountryTable::getAllCountry(Yii::$app->language), 'id', 'CommonName'), [
-                    'prompt' => CustomerModule::t('customer', 'Country'),
+                    'prompt' => CustomerModule::t('customer', 'Chọn quốc gia...'),
                     'class' => 'form-control load-data-on-change',
                     'load-data-element' => '#select-province',
                     'load-data-url' => Url::toRoute(['/location/location-province/get-province-by-country']),
@@ -102,7 +102,7 @@ $status_call_accept = ArrayHelper::map(CustomerStatusCallTable::getStatusCallDat
             <div class="col-md-6 col-12">
                 <?= $form->field($model, 'province')->dropDownList(ArrayHelper::map(LocationProvinceTable::getProvinceByCountry($model->country, Yii::$app->language), 'id', 'name'), [
                     'id' => 'select-province',
-                    'prompt' => CustomerModule::t('customer', 'Province'),
+                    'prompt' => CustomerModule::t('customer', 'Chọn Tỉnh/Thành phố...'),
                     'class' => 'form-control load-data-on-change',
                     'load-data-element' => '#select-district',
                     'load-data-url' => Url::toRoute(['/location/location-district/get-district-by-province']),
@@ -116,7 +116,7 @@ $status_call_accept = ArrayHelper::map(CustomerStatusCallTable::getStatusCallDat
             <div class="col-md-6 col-12">
                 <?= $form->field($model, 'district')->dropDownList(ArrayHelper::map(LocationDistrictTable::getDistrictByProvince($model->province, Yii::$app->language), 'id', 'name'), [
                     'id' => 'select-district',
-                    'prompt' => CustomerModule::t('customer', 'District'),
+                    'prompt' => CustomerModule::t('customer', 'Chọn Quận/Huyện...'),
                     'class' => 'form-control load-data-on-change',
                     'load-data-element' => '#select-ward',
                     'load-data-url' => Url::toRoute(['/location/location-ward/get-ward-by-district']),
@@ -126,7 +126,7 @@ $status_call_accept = ArrayHelper::map(CustomerStatusCallTable::getStatusCallDat
             </div>
             <div class="col-md-6 col-12">
                 <?= $form->field($model, 'ward')->dropDownList(ArrayHelper::map(LocationWardTable::getWardByDistrict($model->district), 'id', 'name'), [
-                    'prompt' => CustomerModule::t('customer', 'Ward'),
+                    'prompt' => CustomerModule::t('customer', 'Chọn Phường/Xã...'),
                     'id' => 'select-ward',
                 ]) ?>
             </div>
@@ -137,38 +137,38 @@ $status_call_accept = ArrayHelper::map(CustomerStatusCallTable::getStatusCallDat
         <div class="row">
             <div class="col-md-6 col-12">
                 <?= $form->field($model, 'agency')->dropDownList(ArrayHelper::map(CustomerAgencyTable::getAllAgency(), 'id', 'name'), [
-                    'prompt' => CustomerModule::t('customer', 'Agency'),
+                    'prompt' => CustomerModule::t('customer', 'Chọn agency...'),
                     'class' => 'form-control load-data-on-change',
                     'load-data-url' => Url::toRoute(['/customer/customer-origin/get-origin-by-agency']),
                     'load-data-element' => '#select-origin',
                     'load-data-key' => 'agency',
                     'load-data-method' => 'GET',
                     'load-data-callback' => '$("#select-fanpage").find("option[value!=\'\']").remove();'
-                ]) ?>
+                ])->label(CustomerModule::t('customer', 'Agency')) ?>
             </div>
             <div class="col-md-6 col-12">
                 <?= $form->field($model, 'origin')->dropDownList(ArrayHelper::map(CustomerOriginTable::getOriginByAgency($model->agency), 'id', 'name'), [
-                    'prompt' => CustomerModule::t('customer', 'Origin'),
+                    'prompt' => CustomerModule::t('customer', 'Chọn nguồn trực tuyến...'),
                     'id' => 'select-origin',
                     'class' => 'form-control load-data-on-change',
                     'load-data-url' => Url::toRoute(['/customer/customer-fanpage/get-fanpage-by-origin']),
                     'load-data-element' => '#select-fanpage',
                     'load-data-key' => 'origin',
                     'load-data-method' => 'GET'
-                ]) ?>
+                ])->label(CustomerModule::t('customer', 'Nguồn trực tuyến')) ?>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6 col-12">
                 <?= $form->field($model, 'fanpage_id')->dropDownList(ArrayHelper::map(CustomerFanpageTable::getFanpageByOrigin($model->origin), 'id', 'name'), [
-                    'prompt' => CustomerModule::t('customer', 'Fanpage'),
+                    'prompt' => CustomerModule::t('customer', 'Chọn fanpage facebook...'),
                     'id' => 'select-fanpage'
                 ]) ?>
             </div>
             <div class="col-md-6 col-12">
                 <?= $form->field($model, 'status_call')->dropDownList(ArrayHelper::map(CustomerStatusCallTable::getAllStatusCall(), 'id', 'name'), [
                     'id' => 'status_call',
-                    'prompt' => 'Trạng thái gọi...'
+                    'prompt' => CustomerModule::t('customer', 'Trạng thái gọi...')
                 ]) ?>
             </div>
         </div>
@@ -198,7 +198,7 @@ $status_call_accept = ArrayHelper::map(CustomerStatusCallTable::getStatusCallDat
                 </div>
                 <div class="col-md-6 col-12">
                     <?= $form->field($model, 'status_fail')->dropDownList(ArrayHelper::map(CustomerStatusFailTable::getAllStatusFail(), 'id', 'name'), [
-                        'prompt' => 'Lý do fail...'
+                        'prompt' => CustomerModule::t('customer', 'Lý do fail...')
                     ]) ?>
                 </div>
             </div>
@@ -220,7 +220,7 @@ $status_call_accept = ArrayHelper::map(CustomerStatusCallTable::getStatusCallDat
                 </div>
                 <div class="col-md-6 col-12">
                     <?= $form->field($model, 'co_so')->dropDownList(ArrayHelper::map(CustomerCoSoTable::getAllCoSo(), 'id', 'name'), [
-                        'prompt' => 'Cơ sở...'
+                        'prompt' => CustomerModule::t('customer', 'Chọn cơ sở...')
                     ]) ?>
                 </div>
             </div>
