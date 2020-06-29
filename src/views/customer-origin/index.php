@@ -96,7 +96,27 @@ $this->params['breadcrumbs'][] = $this->title;
                                                     'class' => 'd-none',
                                                 ],
                                             ],
-                                            'name',
+                                            [
+                                                'attribute' => 'name',
+                                                'format' => 'raw',
+                                                'value' => function ($model) {
+                                                    return Html::a($model->name, ['view', 'id' => $model->primaryKey], []);
+                                                }
+                                            ],
+                                            [
+                                                'attribute' => 'agency_id',
+                                                'format' => 'raw',
+                                                'value' => function ($model) {
+                                                    if (!is_array($model->agencyHasMany) || count($model->agencyHasMany) <= 0) return null;
+                                                    $agencies = '';
+                                                    foreach ($model->agencyHasMany as $i => $agency) {
+                                                        $agencies .= Html::a($agency->name, ['/customer/customer-agency/view', 'id' => $agency->id], [
+                                                            'class' => 'btn btn-sm btn-primary' . ($i == 0 ? '' : ' ml-1')
+                                                        ]);
+                                                    }
+                                                    return $agencies;
+                                                }
+                                            ],
                                             'description:ntext',
                                             [
                                                 'attribute' => 'language',

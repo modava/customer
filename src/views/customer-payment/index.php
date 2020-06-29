@@ -100,16 +100,24 @@ $this->params['breadcrumbs'][] = $this->title;
                                             ],
                                             [
                                                 'attribute' => 'customer_id',
+                                                'label' => CustomerModule::t('customer', 'Customers'),
+                                                'format' => 'raw',
                                                 'value' => function ($model) {
-                                                    if ($model->orderHasOne != null && $model->orderHasOne->customerHasOne != null) return $model->orderHasOne->customerHasOne->name;
-                                                    return null;
+                                                    return Html::a($model->orderHasOne->customerHasOne->name, ['/customer/clinic/view', 'id' => $model->orderHasOne->customerHasOne->id], [
+                                                        'target' => '_blank',
+                                                        'data-pjax' => 0
+                                                    ]);
                                                 }
                                             ],
                                             [
                                                 'attribute' => 'order_id',
+                                                'label' => CustomerModule::t('customer', 'Order'),
+                                                'format' => 'raw',
                                                 'value' => function ($model) {
-                                                    if ($model->orderHasOne != null) return $model->orderHasOne->code;
-                                                    return null;
+                                                    return Html::a($model->orderHasOne->code, ['/customer/customer-order/view', 'id' => $model->orderHasOne->id], [
+                                                        'target' => '_blank',
+                                                        'data-pjax' => 0
+                                                    ]);
                                                 }
                                             ],
                                             'price',
@@ -146,8 +154,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                             [
                                                 'class' => 'yii\grid\ActionColumn',
                                                 'header' => CustomerModule::t('customer', 'Actions'),
-                                                'template' => '{update} {delete}',
+                                                'template' => '{view} {update} {delete}',
                                                 'buttons' => [
+                                                    'view' => function ($url, $model) {
+                                                        return Html::a('<span class="glyphicon glyphicon-search"></span>', $url, [
+                                                            'title' => CustomerModule::t('customer', 'View'),
+                                                            'alia-label' => CustomerModule::t('customer', 'View'),
+                                                            'data-pjax' => 0,
+                                                            'class' => 'btn btn-success btn-xs'
+                                                        ]);
+                                                    },
                                                     'update' => function ($url, $model) {
                                                         return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
                                                             'title' => CustomerModule::t('customer', 'Update'),

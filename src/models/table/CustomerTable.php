@@ -44,6 +44,11 @@ class CustomerTable extends \yii\db\ActiveRecord
         return $this->hasOne(User::class, ['id' => 'permission_user']);
     }
 
+    public function getDirectSaleHasOne()
+    {
+        return $this->hasOne(User::class, ['id' => 'direct_sale']);
+    }
+
     public function getStatusCallHasOne()
     {
         return $this->hasOne(CustomerStatusCallTable::class, ['id' => 'status_call']);

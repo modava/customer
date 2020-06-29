@@ -62,8 +62,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 return Yii::$app->getModule('customer')->params['availableLocales'][$model->language];
                             },
                         ],
-						'created_at',
-						'updated_at',
+						'created_at:datetime',
+						'updated_at:datetime',
                         [
                             'attribute' => 'userCreated.userProfile.fullname',
                             'label' => CustomerModule::t('customer', 'Created By')

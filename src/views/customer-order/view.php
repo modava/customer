@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'attribute' => 'status',
                             'value' => function ($model) {
-                                return Yii::$app->getModule('customer')->params['status'][$model->status];
+                                return Yii::$app->getModule('customer')->params['statusOrder'][$model->status];
                             }
                         ],
                         'co_so',

@@ -6,6 +6,8 @@ use yii\widgets\DetailView;
 use backend\widgets\ToastrWidget;
 use modava\customer\widgets\NavbarWidgets;
 use modava\customer\CustomerModule;
+use modava\customer\models\table\CustomerTable;
+use modava\customer\models\table\CustomerStatusCallTable;
 
 /* @var $this yii\web\View */
 /* @var $model modava\customer\models\Customer */
@@ -26,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </h4>
         <p>
             <a class="btn btn-outline-light" href="<?= Url::to(['create']); ?>"
-                title="<?= CustomerModule::t('customer', 'Create'); ?>">
+               title="<?= CustomerModule::t('customer', 'Create'); ?>">
                 <i class="fa fa-plus"></i> <?= CustomerModule::t('customer', 'Create'); ?></a>
             <?= Html::a(CustomerModule::t('customer', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?= Html::a(CustomerModule::t('customer', 'Delete'), ['delete', 'id' => $model->id], [
@@ -47,30 +49,75 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= DetailView::widget([
                     'model' => $model,
                     'attributes' => [
-						'id',
-						'code',
-						'name',
-						'birthday',
-						'sex',
-						'phone',
-						'address',
-						'ward',
-						'avatar',
-						'fanpage_id',
-						'permission_user',
-						'type',
-						'status_call',
-						'status_fail',
-						'status_dat_hen',
-						'status_dong_y',
-						'time_lich_hen:datetime',
-						'time_come:datetime',
-						'direct_sale',
-						'co_so',
-						'sale_online_note',
-						'direct_sale_note',
-						'created_at',
-						'updated_at',
+                        'id',
+                        'code',
+                        'name',
+                        'birthday',
+                        [
+                            'attribute' => 'sex',
+                            'value' => function ($model) {
+                                if (!array_key_exists($model->sex, Yii::$app->getModule('customer')->params['sex'])) return null;
+                                return Yii::$app->getModule('customer')->params['sex'][$model->sex];
+                            }
+                        ],
+                        'phone',
+                        [
+                            'attribute' => 'address',
+                            'label' => CustomerModule::t('customer', 'Address'),
+                            'value' => function ($model) {
+                                return $model->address . ', ' . $model->wardHasOne->name . ', ' . $model->wardHasOne->districtHasOne->name . ', ' . $model->wardHasOne->districtHasOne->provinceHasOne->name . ', ' . $model->wardHasOne->districtHasOne->provinceHasOne->countryHasOne->CommonName;
+                            }
+                        ],
+                        'avatar',
+                        [
+                            'attribute' => 'fanpageHasOne.name',
+                            'label' => CustomerModule::t('customer', 'Fanpage')
+                        ],
+                        [
+                            'attribute' => 'permissionUserHasOne.userProfile.fullname',
+                            'label' => CustomerModule::t('customer', 'Permission User')
+                        ],
+                        [
+                            'attribute' => 'permissionUserHasOne.userProfile.fullname',
+                            'label' => CustomerModule::t('customer', 'Customer Type'),
+                            'value' => function ($model) {
+                                if (!array_key_exists($model->type, CustomerTable::TYPE)) return null;
+                                return CustomerTable::TYPE[$model->type];
+                            }
+                        ],
+                        [
+                            'attribute' => 'statusCallHasOne.name',
+                            'label' => CustomerModule::t('customer', 'Status Call')
+                        ],
+                        [
+                            'attribute' => 'statusFailHasOne.name',
+                            'label' => CustomerModule::t('customer', 'Status Fail'),
+                            'visible' => $model->statusCallHasOne->accept === CustomerStatusCallTable::STATUS_DISABLED,
+                        ],
+                        [
+                            'attribute' => 'statusDatHenHasOne.name',
+                            'label' => CustomerModule::t('customer', 'Status Dat Hen'),
+                            'visible' => $model->statusCallHasOne->accept === CustomerStatusCallTable::STATUS_PUBLISHED,
+                        ],
+                        [
+                            'attribute' => 'statusDongYHasOne.name',
+                            'label' => CustomerModule::t('customer', 'Status Dong Y'),
+                            'visible' => $model->statusCallHasOne->accept === CustomerStatusCallTable::STATUS_PUBLISHED,
+                        ],
+                        'time_lich_hen:datetime',
+                        'time_come:datetime',
+                        [
+                            'attribute' => 'directSaleHasOne.userProfile.fullname',
+                            'label' => CustomerModule::t('customer', 'Direct Sale')
+                        ],
+                        [
+                            'attribute' => 'coSoHasOne.name',
+                            'label' => CustomerModule::t('customer', 'Co So')
+                        ],
+                        'sale_online_note',
+                        'direct_sale_note',
+                        'created_at:datetime',
+                        'updated_at:datetime',
                         [
                             'attribute' => 'userCreated.userProfile.fullname',
                             'label' => CustomerModule::t('customer', 'Created By')

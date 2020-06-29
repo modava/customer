@@ -51,11 +51,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id',
                         [
                             'attribute' => 'orderHasOne.customerHasOne.name',
-                            'label' => CustomerModule::t('customer', 'Customer ID')
+                            'label' => CustomerModule::t('customer', 'Customers')
                         ],
                         [
                             'attribute' => 'orderHasOne.code',
-                            'label' => CustomerModule::t('customer', 'Order ID')
+                            'label' => CustomerModule::t('customer', 'Order')
                         ],
                         'price',
                         [

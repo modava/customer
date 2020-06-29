@@ -100,11 +100,21 @@ $this->params['breadcrumbs'][] = $this->title;
                                             [
                                                 'attribute' => 'customer_id',
                                                 'format' => 'html',
+                                                'label' => CustomerModule::t('customer', 'Customers'),
                                                 'value' => function ($model) {
                                                     return Html::a($model->customerHasOne->name, ['view', 'id' => $model->id], []);
                                                 }
                                             ],
-                                            'code',
+                                            [
+                                                'attribute' => 'code',
+                                                'label' => CustomerModule::t('customer', 'Order'),
+                                                'format' => 'raw',
+                                                'value' => function ($model) {
+                                                    return Html::a($model->code, ['view', 'id' => $model->id], [
+                                                        'data-pjax' => 0
+                                                    ]);
+                                                }
+                                            ],
                                             'total',
                                             'discount',
                                             //'co_so',
