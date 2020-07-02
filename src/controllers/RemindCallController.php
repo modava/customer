@@ -10,12 +10,12 @@ use yii\web\NotFoundHttpException;
 use modava\customer\CustomerModule;
 use backend\components\MyController;
 use modava\customer\models\Customer;
-use modava\customer\models\search\SalesOnlineRemindCallSearch;
+use modava\customer\models\search\RemindCallSearch;
 
 /**
  * SalesOnlineRemindCallController implements the CRUD actions for Customer model.
  */
-class SalesOnlineRemindCallController extends MyController
+class RemindCallController extends MyController
 {
     /**
      * Lists all Customer models.
@@ -23,7 +23,7 @@ class SalesOnlineRemindCallController extends MyController
      */
     public function actionIndex()
     {
-        $searchModel = new SalesOnlineRemindCallSearch();
+        $searchModel = new RemindCallSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

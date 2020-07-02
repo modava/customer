@@ -25,7 +25,7 @@ use modava\customer\models\table\CustomerPaymentTable;
                 else if ($order_detail->discount_by == CustomerPaymentTable::DISCOUNT_BY_PERCENT) $discount = $total_price * $order_detail->discount / 100;
                 ?>
                 <tr>
-                    <td><?= $order_detail->productHasOne->title ?></td>
+                    <td><?= $order_detail->productHasOne->name ?></td>
                     <td><?= $order_detail->price ?></td>
                     <td><?= $order_detail->qty ?></td>
                     <td><?= $total_price ?></td>

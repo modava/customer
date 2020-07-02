@@ -136,7 +136,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                             [
                                                 'class' => 'yii\grid\ActionColumn',
                                                 'header' => CustomerModule::t('customer', 'Actions'),
-                                                'template' => '<div>{update} {delete}</div><div class="mt-1">{treatment-schedule} {list-treatment-schedule}</div><div class="mt-1">{payment} {list-payment}</div>',
+                                                'template' => '<div>{update} {delete}</div><div class="mt-1">{payment} {list-payment}</div>',
                                                 'buttons' => [
                                                     'update' => function ($url, $model) {
                                                         return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
@@ -158,7 +158,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                                             'data-placement' => 'top'
                                                         ]);
                                                     },
-                                                    'treatment-schedule' => function ($url, $model) {
+                                                    /*
+                                                     * Lịch điều trị
+                                                     * 'treatment-schedule' => function ($url, $model) {
                                                         if ($model->status == CustomerOrderTable::STATUS_PUBLISHED) return null;
                                                         return Html::a('<span class="glyphicon glyphicon-plus"></span>', ['/customer/customer-treatment-schedule/create', 'order_id' => $model->id], [
                                                             'title' => CustomerModule::t('customer', 'Create Treatment Schedule'),
@@ -172,7 +174,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                             'class' => 'btn btn-warning btn-xs',
                                                             'data-pjax' => 0,
                                                         ]);
-                                                    },
+                                                    },*/
                                                     'payment' => function ($url, $model) {
                                                         if ($model->status == CustomerOrderTable::STATUS_PUBLISHED) return null;
                                                         return Html::a('<span class="glyphicon glyphicon-plus"></span>', ['/customer/customer-payment/create', 'order_id' => $model->id], [

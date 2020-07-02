@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </h4>
         <p>
             <?php if ($model->status == CustomerOrderTable::STATUS_DISABLED) { ?>
-                <?= Html::a('<i class="glyphicon glyphicon-list-alt"></i> ' . CustomerModule::t('customer', 'Treatment Schedule'), ['/customer/customer-treatment-schedule/create', 'order_id' => $model->primaryKey], ['class' => 'btn btn-warning']) ?>
+                <?php /*= Html::a('<i class="glyphicon glyphicon-list-alt"></i> ' . CustomerModule::t('customer', 'Treatment Schedule'), ['/customer/customer-treatment-schedule/create', 'order_id' => $model->primaryKey], ['class' => 'btn btn-warning'])*/ ?>
                 <?= Html::a('<i class="glyphicon glyphicon-credit-card"></i> ' . CustomerModule::t('customer', 'Payment'), ['/customer/customer-payment/index', 'order_id' => $model->primaryKey], ['class' => 'btn btn-success']) ?>
             <?php } ?>
             <a class="btn btn-outline-light" href="<?= Url::to(['create']); ?>"
@@ -53,7 +53,16 @@ $this->params['breadcrumbs'][] = $this->title;
                     'model' => $model,
                     'attributes' => [
                         'id',
-                        'customerHasOne.name',
+                        [
+                            'attribute' => 'customer_id',
+                            'label' => CustomerModule::t('customer', 'Customers'),
+                            'format' => 'raw',
+                            'value' => function ($model) {
+                                return Html::a($model->customerHasOne->name, ['/customer/customer/view', 'id' => $model->customer_id], [
+                                    'target' => '_blank'
+                                ]);
+                            }
+                        ],
                         'code',
                         'total',
                         'discount',

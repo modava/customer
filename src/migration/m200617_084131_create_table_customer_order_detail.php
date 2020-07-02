@@ -30,6 +30,8 @@ class m200617_084131_create_table_customer_order_detail extends Migration
                 'discount_by' => $this->tinyInteger(1)->null()->defaultValue(1)->comment('1: Giảm theo đ, 2: Giảm theo %'),
                 'reason_discount' => $this->string(255)->null()->comment('Lý do chiết khấu'),
             ], $tableOptions);
+            $this->addForeignKey('fk_customer_order_detail_order_id_customer_order', 'customer_order_detail', 'order_id', 'customer_order', 'id', 'CASCADE', 'CASCADE');
+            $this->addForeignKey('fk_customer_order_detail_customer_product_id_customer_product', 'customer_order_detail', 'product_id', 'customer_product', 'id', 'CASCADE', 'CASCADE');
         }
     }
 

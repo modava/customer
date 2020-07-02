@@ -3,7 +3,7 @@
 use common\widgets\assets\Select2Asset;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use modava\product\models\table\ProductTable;
+use modava\customer\models\table\CustomerProductTable;
 use modava\product\models\table\ProductCategoryTable;
 use modava\customer\models\CustomerPayment;
 use yii\widgets\ActiveForm;
@@ -22,7 +22,7 @@ use modava\customer\components\CustomerDateTimePicker;
 Select2Asset::register($this);
 
 $options_price = [];
-foreach (ArrayHelper::map(ProductTable::getAll(Yii::$app->language), 'id', 'price') as $id => $price) {
+foreach (ArrayHelper::map(CustomerProductTable::getAll(Yii::$app->language), 'id', 'price') as $id => $price) {
     $options_price[$id] = [
         'price' => $price
     ];
@@ -91,7 +91,7 @@ if(Yii::$app->controller->action->id == 'create') {
                         'type' => 'dropdownList',
                         'title' => CustomerModule::t('customer', 'Product ID'),
                         'enableError' => true,
-                        'items' => ArrayHelper::map(ProductTable::getAll(Yii::$app->language), 'id', 'title'),
+                        'items' => ArrayHelper::map(CustomerProductTable::getAll(Yii::$app->language), 'id', 'name'),
                         'options' => [
                             'prompt' => CustomerModule::t('customer', 'Chọn sản phẩm...'),
                             'class' => 'form-control select-product',
@@ -213,7 +213,7 @@ if(Yii::$app->controller->action->id == 'create') {
 <?php
 $discount_by_money = CustomerPayment::DISCOUNT_BY_MONEY;
 $discount_by_percent = CustomerPayment::DISCOUNT_BY_PERCENT;
-$urlGetProductInfo = Url::toRoute(['/product/product/get-product-info']);
+$urlGetProductInfo = Url::toRoute(['/customer/customer-product/get-product-info']);
 $script = <<< JS
 function getProductInfo(id){
     return new Promise(resolve => {
@@ -275,8 +275,7 @@ $('#order-info').on('change', '.select-product', function(){
     var id = $(this).val(),
         row = $(this).closest('.product-row');
     getProductInfo(id).then(res => {
-        var price = parseInt(![null, undefined, ''].includes(res.price_sale) ? res.price_sale : res.price);
-        row.find('.product-price').val(price);
+        row.find('.product-price').val(res.price);
         handleOrder($('#order-info'));
     });
 }).on('change', '.product-change', function(){

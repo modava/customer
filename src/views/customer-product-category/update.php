@@ -6,12 +6,12 @@ use yii\helpers\Url;
 use modava\customer\CustomerModule;
 
 /* @var $this yii\web\View */
-/* @var $model modava\customer\models\SalesOnline */
+/* @var $model modava\customer\models\CustomerProductCategory */
 
 $this->title = CustomerModule::t('customer', 'Update : {name}', [
     'name' => $model->name,
 ]);
-$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Customers'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Customer Product Categories'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = CustomerModule::t('customer', 'Update');
 ?>

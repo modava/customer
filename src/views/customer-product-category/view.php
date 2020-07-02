@@ -8,10 +8,10 @@ use modava\customer\widgets\NavbarWidgets;
 use modava\customer\CustomerModule;
 
 /* @var $this yii\web\View */
-/* @var $model modava\customer\models\CustomerFanpage */
+/* @var $model modava\customer\models\CustomerProductCategory */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Fanpage facebook'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Customer Product Categories'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </h4>
         <p>
             <a class="btn btn-outline-light" href="<?= Url::to(['create']); ?>"
-               title="<?= CustomerModule::t('customer', 'Create'); ?>">
+                title="<?= CustomerModule::t('customer', 'Create'); ?>">
                 <i class="fa fa-plus"></i> <?= CustomerModule::t('customer', 'Create'); ?></a>
             <?= Html::a(CustomerModule::t('customer', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?= Html::a(CustomerModule::t('customer', 'Delete'), ['delete', 'id' => $model->id], [
@@ -47,19 +47,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= DetailView::widget([
                     'model' => $model,
                     'attributes' => [
-                        'id',
-                        [
-                            'attribute' => 'origin_id',
-                            'format' => 'raw',
-                            'value' => function ($model) {
-                                return Html::a($model->originHasOne->name, ['/customer/customer-origin/view', 'id' => $model->origin_id], [
-                                    'target' => '_blank'
-                                ]);
-                            }
-                        ],
-                        'name',
-                        'description:ntext',
-                        'url_page:url',
+						'id',
+						'name',
+						'description',
                         [
                             'attribute' => 'status',
                             'value' => function ($model) {
@@ -72,8 +62,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 return Yii::$app->getModule('customer')->params['availableLocales'][$model->language];
                             },
                         ],
-                        'created_at:datetime',
-                        'updated_at:datetime',
+						'created_at:datetime',
+						'updated_at:datetime',
                         [
                             'attribute' => 'userCreated.userProfile.fullname',
                             'label' => CustomerModule::t('customer', 'Created By')

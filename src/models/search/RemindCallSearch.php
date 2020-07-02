@@ -11,7 +11,7 @@ use modava\customer\models\Customer;
 /**
  * SalesOnlineRemindCallSearch represents the model behind the search form of `modava\customer\models\Customer`.
  */
-class SalesOnlineRemindCallSearch extends Customer
+class RemindCallSearch extends Customer
 {
     public $remind_call_date;
 

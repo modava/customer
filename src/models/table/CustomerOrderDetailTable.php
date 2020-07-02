@@ -3,7 +3,7 @@
 namespace modava\customer\models\table;
 
 use cheatsheet\Time;
-use modava\product\models\table\ProductTable;
+use modava\customer\models\table\CustomerProductTable;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -21,7 +21,7 @@ class CustomerOrderDetailTable extends \yii\db\ActiveRecord
 
     public function getProductHasOne()
     {
-        return $this->hasOne(ProductTable::class, ['id' => 'product_id']);
+        return $this->hasOne(CustomerProductTable::class, ['id' => 'product_id']);
     }
 
     public function afterDelete()

@@ -7,7 +7,7 @@ use common\models\User;
 use modava\customer\CustomerModule;
 use modava\customer\models\table\CustomerOrderDetailTable;
 use modava\customer\models\table\CustomerOrderTable;
-use modava\product\models\table\ProductTable;
+use modava\customer\models\table\CustomerProductTable;
 use modava\customer\models\CustomerCoSo;
 use yii\behaviors\AttributeBehavior;
 use yii\behaviors\BlameableBehavior;
@@ -105,9 +105,9 @@ class CustomerOrder extends CustomerOrderTable
                 $qty = $order_detail['qty'];
                 $product_discount_by = $order_detail['discount_by'];
                 if (!is_numeric($qty) || $qty <= 0) $qty = 1;
-                $product = ProductTable::getById($order_detail['product_id']);
+                $product = CustomerProductTable::getById($order_detail['product_id']);
                 if ($product == null) continue;
-                $product_price = ($product->price_sale != null ? $product->price_sale : $product->price) * $qty;
+                $product_price = $product->price * $qty;
                 $product_discount = 0;
                 if ($product_discount_by == CustomerPayment::DISCOUNT_BY_MONEY) {
                     $product_discount = $order_detail['discount'] > $product_price ? $product_price : $order_detail['discount'];
@@ -156,7 +156,7 @@ class CustomerOrder extends CustomerOrderTable
             foreach ($this->paymentHasMany as $payment) {
                 $thanh_toan += $payment->price;
             }
-            if($thanh_toan > $this->getAttribute('total') - $this->getAttribute('discount')){
+            if ($thanh_toan > $this->getAttribute('total') - $this->getAttribute('discount')) {
                 $this->addError('total', 'Số tiền đã thanh toán của đơn hàng cao hơn tổng tiền của đơn. Không thể cập nhật');
             }
         }

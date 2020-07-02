@@ -6,13 +6,12 @@ use yii\widgets\DetailView;
 use backend\widgets\ToastrWidget;
 use modava\customer\widgets\NavbarWidgets;
 use modava\customer\CustomerModule;
-use modava\customer\models\table\CustomerPaymentTable;
 
 /* @var $this yii\web\View */
-/* @var $model modava\customer\models\CustomerPayment */
+/* @var $model modava\customer\models\CustomerProduct */
 
-$this->title = CustomerModule::t('customer', 'Payment') . ': ' . $model->orderHasOne->customerHasOne->name . ' (' . $model->orderHasOne->code . ')';
-$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Customer Payments'), 'url' => ['index']];
+$this->title = $model->name;
+$this->params['breadcrumbs'][] = ['label' => CustomerModule::t('customer', 'Customer Products'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -49,43 +48,31 @@ $this->params['breadcrumbs'][] = $this->title;
                     'model' => $model,
                     'attributes' => [
                         'id',
+                        'name',
                         [
-                            'attribute' => 'orderHasOne.customer_id',
-                            'label' => CustomerModule::t('customer', 'Customers'),
+                            'attribute' => 'category_id',
+                            'label' => $model->getAttributeLabel('category_id'),
                             'format' => 'raw',
                             'value' => function ($model) {
-                                return Html::a($model->orderHasOne->customerHasOne->name, ['/customer/customer/view', 'id' => $model->orderHasOne->customer_id], [
-                                    'target' => '_blank'
-                                ]);
-                            }
-                        ],
-                        [
-                            'attribute' => 'order_id',
-                            'label' => CustomerModule::t('customer', 'Order'),
-                            'format' => 'raw',
-                            'value' => function ($model) {
-                                return Html::a($model->orderHasOne->code, ['/customer/customer-order/view', 'id' => $model->order_id], [
+                                return Html::a($model->categoryHasOne->name, ['/customer/customer-product-category/view', 'id' => $model->category_id], [
                                     'target' => '_blank'
                                 ]);
                             }
                         ],
                         'price',
+                        'description',
                         [
-                            'attribute' => 'payments',
+                            'attribute' => 'status',
                             'value' => function ($model) {
-                                if (array_key_exists($model->payments, CustomerPaymentTable::PAYMENTS)) return CustomerPaymentTable::PAYMENTS[$model->payments];
-                                return CustomerPaymentTable::PAYMENTS[CustomerPaymentTable::PAYMENTS_THANH_TOAN];
+                                return Yii::$app->getModule('customer')->params['status'][$model->status];
                             }
                         ],
                         [
-                            'attribute' => 'type',
+                            'attribute' => 'language',
                             'value' => function ($model) {
-                                if (array_key_exists($model->type, CustomerPaymentTable::TYPE)) return CustomerPaymentTable::TYPE[$model->type];
-                                return CustomerPaymentTable::TYPE[CustomerPaymentTable::TYPE_TIEN_MAT];
-                            }
+                                return Yii::$app->getModule('customer')->params['availableLocales'][$model->language];
+                            },
                         ],
-                        'co_so',
-                        'payment_at',
                         'created_at:datetime',
                         'updated_at:datetime',
                         [

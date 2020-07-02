@@ -5,13 +5,12 @@ namespace modava\customer\models\search;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use modava\customer\models\Customer;
-use modava\customer\models\table\CustomerStatusCallTable;
+use modava\customer\models\CustomerProduct;
 
 /**
- * CustomerSearch represents the model behind the search form of `modava\customer\models\Customer`.
+ * CustomerProductSearch represents the model behind the search form of `modava\customer\models\CustomerProduct`.
  */
-class CustomerSearch extends Customer
+class CustomerProductSearch extends CustomerProduct
 {
     /**
      * @inheritdoc
@@ -19,9 +18,9 @@ class CustomerSearch extends Customer
     public function rules()
     {
         return [
-            [['name'], 'string', 'on' => [self::SCENARIO_ONLINE, self::SCENARIO_CLINIC, self::SCENARIO_ADMIN]],
-            [['birthday'], 'date', 'format' => 'php:d-m-Y', 'on' => [self::SCENARIO_ONLINE, self::SCENARIO_CLINIC, self::SCENARIO_ADMIN]],
-            [['sex', 'created_at', 'created_by'], 'integer', 'on' => [self::SCENARIO_ONLINE, self::SCENARIO_CLINIC, self::SCENARIO_ADMIN]],
+            [['id', 'category_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['name', 'description', 'status', 'language'], 'safe'],
+            [['price'], 'number'],
         ];
     }
 
@@ -43,14 +42,7 @@ class CustomerSearch extends Customer
      */
     public function search($params)
     {
-        $query = Customer::find();
-
-        if ($this->scenario === self::SCENARIO_ONLINE) {
-            $query->andWhere([self::tableName() . '.type' => self::TYPE_ONLINE]);
-        }
-        if($this->scenario === self::SCENARIO_CLINIC){
-            $query->joinWith(['statusCallHasOne'])->where([CustomerStatusCallTable::tableName() . '.accept' => CustomerStatusCallTable::STATUS_PUBLISHED]);
-        }
+        $query = CustomerProduct::find();
 
         // add conditions that should always apply here
 
@@ -69,14 +61,19 @@ class CustomerSearch extends Customer
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'birthday' => $this->birthday,
+            'id' => $this->id,
+            'category_id' => $this->category_id,
+            'price' => $this->price,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,
+            'updated_at' => $this->updated_at,
+            'updated_by' => $this->updated_by,
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'sex', $this->sex])
-            ->andFilterWhere(['like', 'phone', $this->phone]);
+            ->andFilterWhere(['like', 'description', $this->description])
+            ->andFilterWhere(['like', 'status', $this->status])
+            ->andFilterWhere(['like', 'language', $this->language]);
 
         return $dataProvider;
     }

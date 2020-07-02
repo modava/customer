@@ -11,9 +11,11 @@ use yii\db\ActiveRecord;
 
 class CustomerTable extends \yii\db\ActiveRecord
 {
+    const TYPE_ADMIN = 0;
     const TYPE_ONLINE = 1;
     const TYPE_DIRECT = 2;
     const TYPE = [
+        self::TYPE_ADMIN => 'Admin',
         self::TYPE_ONLINE => 'Online',
         self::TYPE_DIRECT => 'Direct'
     ];

@@ -33,6 +33,8 @@ class m200617_084142_create_table_customer_payment extends Migration
                 'created_by' => $this->integer(11)->null()->defaultValue(1),
                 'updated_by' => $this->integer(11)->null()->defaultValue(1),
             ], $tableOptions);
+            $this->addForeignKey('fk_customer_payment_order_id_customer_order', 'customer_payment', 'order_id', 'customer_order', 'id', 'RESTRICT', 'CASCADE');
+            $this->addForeignKey('fk_customer_payment_co_so_customer_co_so', 'customer_payment', 'co_so', 'customer_co_so', 'id', 'RESTRICT', 'CASCADE');
             $this->addForeignKey('fk_customer_payment_created_by_user', 'customer_payment', 'created_by', 'user', 'id', 'RESTRICT', 'CASCADE');
             $this->addForeignKey('fk_customer_payment_updated_by_user', 'customer_payment', 'updated_by', 'user', 'id', 'RESTRICT', 'CASCADE');
         }

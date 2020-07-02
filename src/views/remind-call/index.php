@@ -9,10 +9,10 @@ use yii\widgets\Pjax;
 use modava\customer\models\table\CustomerTable;
 
 /* @var $this yii\web\View */
-/* @var $searchModel modava\customer\models\search\SalesOnlineSearch */
+/* @var $searchModel modava\customer\models\search\RemindCallSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = CustomerModule::t('customer', 'Customers');
+$this->title = CustomerModule::t('customer', 'Nhắc lịch chăm sóc');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?= ToastrWidget::widget(['key' => 'toastr-' . $searchModel->toastr_key . '-index']) ?>
@@ -24,11 +24,6 @@ $this->params['breadcrumbs'][] = $this->title;
             <h4 class="hk-pg-title"><span class="pg-title-icon"><span
                             class="ion ion-md-apps"></span></span><?= Html::encode($this->title) ?>
             </h4>
-            <div class="mb-0">
-                <a class="btn btn-outline-light" href="<?= \yii\helpers\Url::to(['create']); ?>"
-                   title="<?= CustomerModule::t('customer', 'Create'); ?> (Sales Online)">
-                    <i class="fa fa-plus"></i> <?= CustomerModule::t('customer', 'Create'); ?></a>
-            </div>
         </div>
 
         <!-- Row -->
@@ -44,25 +39,25 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <?= GridView::widget([
                                         'dataProvider' => $dataProvider,
                                         'layout' => '
-                                        {errors}
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                {items}
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-sm-12 col-md-5">
-                                                <div class="dataTables_info" role="status" aria-live="polite">
-                                                    {pager}
+                                            {errors}
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    {items}
                                                 </div>
                                             </div>
-                                            <div class="col-sm-12 col-md-7">
-                                                <div class="dataTables_paginate paging_simple_numbers">
-                                                    {summary}
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-5">
+                                                    <div class="dataTables_info" role="status" aria-live="polite">
+                                                        {pager}
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12 col-md-7">
+                                                    <div class="dataTables_paginate paging_simple_numbers">
+                                                        {summary}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ',
+                                        ',
                                         'pager' => [
                                             'firstPageLabel' => CustomerModule::t('customer', 'First'),
                                             'lastPageLabel' => CustomerModule::t('customer', 'Last'),
@@ -87,6 +82,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                             'firstPageCssClass' => 'paginate_button page-item',
                                             'lastPageCssClass' => 'paginate_button page-item',
                                         ],
+                                        'rowOptions' => function ($model, $index) {
+                                            if (date('d-m-Y', $model->remind_call_time) == date('d-m-Y')) return [
+                                                'class' => 'table-danger'
+                                            ];
+                                            return [];
+                                        },
                                         'columns' => [
                                             [
                                                 'class' => 'yii\grid\SerialColumn',
@@ -103,34 +104,18 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'attribute' => 'name',
                                                 'format' => 'raw',
                                                 'value' => function ($model) {
-                                                    return Html::a($model->name, ['view', 'id' => $model->primaryKey], []);
-                                                }
-                                            ],
-                                            'birthday',
-                                            [
-                                                'attribute' => 'sex',
-                                                'value' => function ($model) {
-                                                    if ($model->sex === null || !array_key_exists($model->sex, CustomerTable::SEX)) return null;
-                                                    return CustomerTable::SEX[$model->sex];
+                                                    return Html::a($model->name, ['/customer/customer/view', 'id' => $model->id], []);
                                                 }
                                             ],
                                             'phone',
-                                            //'address',
-                                            //'ward',
-                                            //'avatar',
-                                            //'fanpage_id',
-                                            //'permission_user',
-                                            //'type',
-                                            //'status_call',
-                                            //'status_fail',
-                                            //'status_dat_hen',
-                                            //'status_dong_y',
-                                            //'time_lich_hen:datetime',
-                                            //'time_come:datetime',
-                                            //'direct_sale',
-                                            //'co_so',
-                                            //'sale_online_note',
-                                            //'direct_sale_note',
+                                            [
+                                                'attribute' => 'remind_call_time',
+                                                'format' => 'raw',
+                                                'value' => function ($model) {
+                                                    if ($model->remind_call_time == null) return null;
+                                                    return date('d-m-Y H:i', $model->remind_call_time);
+                                                }
+                                            ],
                                             [
                                                 'attribute' => 'created_by',
                                                 'value' => 'userCreated.userProfile.fullname',
@@ -148,28 +133,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                             [
                                                 'class' => 'yii\grid\ActionColumn',
                                                 'header' => CustomerModule::t('customer', 'Actions'),
-                                                'template' => '{update} {delete}',
+                                                'template' => '{update}',
                                                 'buttons' => [
                                                     'update' => function ($url, $model) {
-                                                        return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
+                                                        return Html::a('<span class="glyphicon glyphicon-pencil"></span>', ['/customer/customer/update', 'id' => $model->id], [
                                                             'title' => CustomerModule::t('customer', 'Update'),
                                                             'alia-label' => CustomerModule::t('customer', 'Update'),
                                                             'data-pjax' => 0,
                                                             'class' => 'btn btn-info btn-xs'
                                                         ]);
                                                     },
-                                                    'delete' => function ($url, $model) {
-                                                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', 'javascript:;', [
-                                                            'title' => CustomerModule::t('customer', 'Delete'),
-                                                            'class' => 'btn btn-danger btn-xs btn-del',
-                                                            'data-title' => CustomerModule::t('customer', 'Delete?'),
-                                                            'data-pjax' => 0,
-                                                            'data-url' => $url,
-                                                            'btn-success-class' => 'success-delete',
-                                                            'btn-cancel-class' => 'cancel-delete',
-                                                            'data-placement' => 'top'
-                                                        ]);
-                                                    }
                                                 ],
                                                 'headerOptions' => [
                                                     'width' => 150,
@@ -188,13 +161,5 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 <?php
 $script = <<< JS
-$('body').on('click', '.success-delete', function(e){
-    e.preventDefault();
-    var url = $(this).attr('href') || null;
-    if(url !== null){
-        $.post(url);
-    }
-    return false;
-});
 JS;
 $this->registerJs($script, \yii\web\View::POS_END);

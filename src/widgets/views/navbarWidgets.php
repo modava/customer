@@ -2,7 +2,7 @@
 
 use yii\helpers\Url;
 use modava\customer\CustomerModule;
-use modava\customer\models\search\SalesOnlineRemindCallSearch;
+use modava\customer\models\search\RemindCallSearch;
 
 $is_dev = Yii::$app->user->can('develop');
 ?>
@@ -19,7 +19,7 @@ $is_dev = Yii::$app->user->can('develop');
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'sales-online-remind-call') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer/sales-online-remind-call']); ?>">
                 <i class="ion ion-ios-locate"></i><?= CustomerModule::t('sales-online-remind-call', 'Remind Call'); ?>
-                <div class="badge badge-danger badge-pill"><?= SalesOnlineRemindCallSearch::getSalesOnlineRemindCall(isset($this->params['userRoleName']) && !in_array($this->params['userRoleName'], [])) ? Yii::$app->user->id : null ?></div>
+                <div class="badge badge-danger badge-pill"><?= RemindCallSearch::getSalesOnlineRemindCall(isset($this->params['userRoleName']) && !in_array($this->params['userRoleName'], [])) ? Yii::$app->user->id : null ?></div>
             </a>
         </li>
     <?php } ?>
@@ -46,12 +46,12 @@ $is_dev = Yii::$app->user->can('develop');
                 <i class="ion ion-ios-locate"></i><?= CustomerModule::t('customer', 'Customer Payment'); ?>
             </a>
         </li>
-        <li class="nav-item mb-5">
+        <?php /*<li class="nav-item mb-5">
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'customer-treatment-schedule') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer/customer-treatment-schedule']); ?>">
                 <i class="ion ion-ios-locate"></i><?= CustomerModule::t('customer', 'Customer Treatment Schedule'); ?>
             </a>
-        </li>
+        </li>*/ ?>
     <?php } ?>
     <?php if ($is_dev || Yii::$app->user->can('customer-status-fail')) { ?>
         <li class="nav-item mb-5">
@@ -114,6 +114,22 @@ $is_dev = Yii::$app->user->can('develop');
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'customer-co-so') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer/customer-co-so']); ?>">
                 <i class="ion ion-ios-locate"></i><?= CustomerModule::t('customer', 'Customer Co So'); ?>
+            </a>
+        </li>
+    <?php } ?>
+    <?php if ($is_dev || Yii::$app->user->can('customer-product-category')) { ?>
+        <li class="nav-item mb-5">
+            <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'customer-product-category') echo ' active' ?>"
+               href="<?= Url::toRoute(['/customer/customer-product-category']); ?>">
+                <i class="ion ion-ios-locate"></i><?= CustomerModule::t('customer', 'Customer Product Category'); ?>
+            </a>
+        </li>
+    <?php } ?>
+    <?php if ($is_dev || Yii::$app->user->can('customer-product')) { ?>
+        <li class="nav-item mb-5">
+            <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'customer-product') echo ' active' ?>"
+               href="<?= Url::toRoute(['/customer/customer-product']); ?>">
+                <i class="ion ion-ios-locate"></i><?= CustomerModule::t('customer', 'Customer Product'); ?>
             </a>
         </li>
     <?php } ?>

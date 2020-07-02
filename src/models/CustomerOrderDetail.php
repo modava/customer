@@ -7,7 +7,7 @@ use common\models\User;
 use modava\customer\CustomerModule;
 use modava\customer\models\table\CustomerOrderDetailTable;
 use modava\customer\models\table\CustomerOrderTable;
-use modava\product\models\Product;
+use modava\customer\models\table\CustomerProductTable;
 use yii\db\ActiveRecord;
 use Yii;
 
@@ -52,7 +52,7 @@ class CustomerOrderDetail extends CustomerOrderDetailTable
             [['order_id'], 'exist', 'targetClass' => CustomerOrderTable::class, 'targetAttribute' => ['order_id' => 'id'], 'on' => self::SCENARIO_SAVE],
             [['order_id'], 'integer', 'on' => self::SCENARIO_SAVE],
             [['product_id'], 'required'],
-            [['product_id'], 'exist', 'targetClass' => Product::class, 'targetAttribute' => ['product_id' => 'id']],
+            [['product_id'], 'exist', 'targetClass' => CustomerProductTable::class, 'targetAttribute' => ['product_id' => 'id']],
             [['product_id'], 'integer'],
             [['qty'], 'integer', 'min' => 1],
             [['price', 'discount', 'discount_by'], 'number'],

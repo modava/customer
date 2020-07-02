@@ -6,14 +6,12 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use backend\widgets\ToastrWidget;
 use yii\widgets\Pjax;
-use modava\customer\models\table\CustomerTable;
-use modava\customer\models\table\CustomerStatusDongYTable;
 
 /* @var $this yii\web\View */
-/* @var $searchModel modava\customer\models\search\SalesOnlineSearch */
+/* @var $searchModel modava\customer\models\search\CustomerProductSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = CustomerModule::t('customer', 'Customers');
+$this->title = CustomerModule::t('customer', 'Customer Products');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?= ToastrWidget::widget(['key' => 'toastr-' . $searchModel->toastr_key . '-index']) ?>
@@ -25,11 +23,9 @@ $this->params['breadcrumbs'][] = $this->title;
             <h4 class="hk-pg-title"><span class="pg-title-icon"><span
                             class="ion ion-md-apps"></span></span><?= Html::encode($this->title) ?>
             </h4>
-            <div class="mb-0">
-                <a class="btn btn-outline-light" href="<?= \yii\helpers\Url::to(['create']); ?>"
-                   title="<?= CustomerModule::t('customer', 'Create'); ?> (Sales Online)">
-                    <i class="fa fa-plus"></i> <?= CustomerModule::t('customer', 'Create'); ?></a>
-            </div>
+            <a class="btn btn-outline-light" href="<?= \yii\helpers\Url::to(['create']); ?>"
+               title="<?= CustomerModule::t('customer', 'Create'); ?>">
+                <i class="fa fa-plus"></i> <?= CustomerModule::t('customer', 'Create'); ?></a>
         </div>
 
         <!-- Row -->
@@ -101,37 +97,25 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 ],
                                             ],
                                             [
+                                                'attribute' => 'categoryHasOne.name',
+                                                'label' => CustomerModule::t('customer', 'Product Category')
+                                            ],
+                                            [
                                                 'attribute' => 'name',
                                                 'format' => 'raw',
                                                 'value' => function ($model) {
-                                                    return Html::a($model->name, ['view', 'id' => $model->primaryKey], []);
-                                                }
+                                                    return Html::a($model->name, ['view', 'id' => $model->id], [
+                                                        'data-pjax' => 0
+                                                    ]);
+                                                },
                                             ],
-                                            'birthday',
+                                            'price',
                                             [
-                                                'attribute' => 'sex',
+                                                'attribute' => 'language',
                                                 'value' => function ($model) {
-                                                    if ($model->sex === null || !array_key_exists($model->sex, CustomerTable::SEX)) return null;
-                                                    return CustomerTable::SEX[$model->sex];
-                                                }
+                                                    return Yii::$app->getModule('customer')->params['availableLocales'][$model->language];
+                                                },
                                             ],
-                                            'phone',
-                                            //'address',
-                                            //'ward',
-                                            //'avatar',
-                                            //'fanpage_id',
-                                            //'permission_user',
-                                            //'type',
-                                            //'status_call',
-                                            //'status_fail',
-                                            //'status_dat_hen',
-                                            //'status_dong_y',
-                                            //'time_lich_hen:datetime',
-                                            //'time_come:datetime',
-                                            //'direct_sale',
-                                            //'co_so',
-                                            //'sale_online_note',
-                                            //'direct_sale_note',
                                             [
                                                 'attribute' => 'created_by',
                                                 'value' => 'userCreated.userProfile.fullname',
@@ -149,7 +133,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                             [
                                                 'class' => 'yii\grid\ActionColumn',
                                                 'header' => CustomerModule::t('customer', 'Actions'),
-                                                'template' => '<div>{update} {delete}</div><div class="mt-1">{create-order} {list-order}</div>',
+                                                'template' => '{update} {delete}',
                                                 'buttons' => [
                                                     'update' => function ($url, $model) {
                                                         return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
@@ -170,25 +154,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                             'btn-cancel-class' => 'cancel-delete',
                                                             'data-placement' => 'top'
                                                         ]);
-                                                    },
-                                                    'create-order' => function ($url, $model) {
-                                                        if ($model->statusDongYHasOne == null || $model->statusDongYHasOne->accept != CustomerStatusDongYTable::STATUS_PUBLISHED) return null;
-                                                        return Html::a('<span class="glyphicon glyphicon-plus"></span>', ['/customer/customer-order/create', 'customer_id' => $model->id], [
-                                                            'title' => CustomerModule::t('customer', 'Create Cart'),
-                                                            'alia-label' => CustomerModule::t('customer', 'Create Cart'),
-                                                            'data-pjax' => 0,
-                                                            'class' => 'btn btn-success btn-xs'
-                                                        ]);
-                                                    },
-                                                    'list-order' => function ($url, $model) {
-                                                        if ($model->statusDongYHasOne == null || $model->statusDongYHasOne->accept != CustomerStatusDongYTable::STATUS_PUBLISHED) return null;
-                                                        return Html::a('<span class="glyphicon glyphicon-shopping-cart"></span>', ['/customer/customer-order/index', 'customer_id' => $model->id], [
-                                                            'title' => CustomerModule::t('customer', 'List Cart'),
-                                                            'alia-label' => CustomerModule::t('customer', 'List Cart'),
-                                                            'data-pjax' => 0,
-                                                            'class' => 'btn btn-success btn-xs'
-                                                        ]);
-                                                    },
+                                                    }
                                                 ],
                                                 'headerOptions' => [
                                                     'width' => 150,
