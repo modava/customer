@@ -83,6 +83,7 @@ $status_dat_hen_den = ArrayHelper::map(CustomerStatusDatHenTable::getDatHenDen()
                     'load-data-element' => '#select-province',
                     'load-data-url' => Url::toRoute(['/location/location-province/get-province-by-country']),
                     'load-data-key' => 'country',
+                    'load-data-data' => json_encode(['option_tag' => 'true']),
                     'load-data-method' => 'GET',
                     'load-data-callback' => '$("#select-district, #select-ward").find("option[value!=\'\']").remove();'
                 ]) ?>
@@ -95,6 +96,7 @@ $status_dat_hen_den = ArrayHelper::map(CustomerStatusDatHenTable::getDatHenDen()
                     'load-data-element' => '#select-district',
                     'load-data-url' => Url::toRoute(['/location/location-district/get-district-by-province']),
                     'load-data-key' => 'province',
+                    'load-data-data' => json_encode(['option_tag' => 'true']),
                     'load-data-method' => 'GET',
                     'load-data-callback' => '$("#select-ward").find("option[value!=\'\']").remove();'
                 ]) ?>
@@ -109,6 +111,7 @@ $status_dat_hen_den = ArrayHelper::map(CustomerStatusDatHenTable::getDatHenDen()
                     'load-data-element' => '#select-ward',
                     'load-data-url' => Url::toRoute(['/location/location-ward/get-ward-by-district']),
                     'load-data-key' => 'district',
+                    'load-data-data' => json_encode(['option_tag' => 'true']),
                     'load-data-method' => 'GET',
                 ]) ?>
             </div>

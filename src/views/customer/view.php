@@ -78,7 +78,18 @@ $status_call_dathen = ArrayHelper::map(CustomerStatusCall::getStatusCallDatHen()
                             'attribute' => 'address',
                             'value' => function ($model) {
                                 if ($model->address == null) return null;
-                                return $model->address . ', ' . $model->wardHasOne->name . ', ' . $model->wardHasOne->districtHasOne->name . ', ' . $model->wardHasOne->districtHasOne->provinceHasOne->name . ', ' . $model->wardHasOne->districtHasOne->provinceHasOne->countryHasOne->CommonName;
+                                $address = $model->address;
+                                if ($model->wardHasOne != null) {
+                                    $address .= ', ' . $model->wardHasOne->name;
+                                    if ($model->wardHasOne->districtHasOne != null) {
+                                        $address .= ', ' . $model->wardHasOne->districtHasOne->name;
+                                        if ($model->wardHasOne->districtHasOne->provinceHasOne != null) {
+                                            $address .= ', ' . $model->wardHasOne->districtHasOne->provinceHasOne->name;
+                                            if ($model->wardHasOne->districtHasOne->provinceHasOne->countryHasOne != null) $address .= ', ' . $model->wardHasOne->districtHasOne->provinceHasOne->countryHasOne->CommonName;
+                                        }
+                                    }
+                                }
+                                return $address;
                             }
                         ],
                         [
