@@ -77,10 +77,10 @@ $status_call_dathen = ArrayHelper::map(CustomerStatusCall::getStatusCallDatHen()
                         [
                             'attribute' => 'address',
                             'value' => function ($model) {
-                                if ($model->address == null) return null;
                                 $address = $model->address;
                                 if ($model->wardHasOne != null) {
-                                    $address .= ', ' . $model->wardHasOne->name;
+                                    if(trim($address) != '') $address .= ', ';
+                                    $address .= $model->wardHasOne->name;
                                     if ($model->wardHasOne->districtHasOne != null) {
                                         $address .= ', ' . $model->wardHasOne->districtHasOne->name;
                                         if ($model->wardHasOne->districtHasOne->provinceHasOne != null) {
