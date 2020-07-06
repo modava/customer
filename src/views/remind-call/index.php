@@ -107,7 +107,23 @@ $this->params['breadcrumbs'][] = $this->title;
                                                     return Html::a($model->name, ['/customer/customer/view', 'id' => $model->id], []);
                                                 }
                                             ],
-                                            'phone',
+                                            [
+                                                'attribute' => 'phone',
+                                                'format' => 'raw',
+                                                'value' => function ($model) {
+                                                    $content = '';
+                                                    if (class_exists('modava\voip24h\CallCenter')) $content .= Html::a('<i class="fa fa-phone"></i>', 'javascript: void(0)', [
+                                                        'class' => 'btn btn-xs btn-success call-to',
+                                                        'title' => 'Gọi',
+                                                        'data-uri' => $model->phone
+                                                    ]);
+                                                    $content .= Html::a('<i class="fa fa-paste"></i>', 'javascript: void(0)', [
+                                                        'class' => 'btn btn-xs btn-info copy ml-1',
+                                                        'title' => 'Copy'
+                                                    ]);
+                                                    return $content;
+                                                }
+                                            ],
                                             [
                                                 'attribute' => 'remind_call_time',
                                                 'format' => 'raw',

@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-use common\widgets\Select2;
+use modava\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
 use backend\widgets\ToastrWidget;

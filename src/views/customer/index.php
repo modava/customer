@@ -115,7 +115,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                                     return CustomerTable::SEX[$model->sex];
                                                 }
                                             ],
-                                            'phone',
+                                            [
+                                                'attribute' => 'phone',
+                                                'format' => 'raw',
+                                                'value' => function ($model) {
+                                                    return $model->getPhone();
+                                                }
+                                            ],
                                             [
                                                 'attribute' => 'created_by',
                                                 'value' => 'userCreated.userProfile.fullname',

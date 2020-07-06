@@ -13,6 +13,7 @@ use modava\customer\models\table\CustomerOrderTable;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = CustomerModule::t('customer', 'Đơn hàng');
+if ($searchModel->customerHasOne != null) $this->title .= ': ' . $searchModel->customerHasOne->name;
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?= ToastrWidget::widget(['key' => 'toastr-' . $searchModel->toastr_key . '-index']) ?>

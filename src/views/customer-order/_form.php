@@ -1,6 +1,6 @@
 <?php
 
-use common\widgets\assets\Select2Asset;
+use modava\select2\assets\Select2Asset;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use modava\customer\models\table\CustomerProductTable;
@@ -9,11 +9,12 @@ use modava\customer\models\CustomerPayment;
 use yii\widgets\ActiveForm;
 use backend\widgets\ToastrWidget;
 use modava\customer\CustomerModule;
-use common\widgets\Select2;
+use modava\select2\Select2;
 use yii\helpers\ArrayHelper;
 use unclead\multipleinput\MultipleInput;
 use modava\customer\models\table\CustomerTable;
 use modava\customer\components\CustomerDateTimePicker;
+use modava\customer\models\table\CustomerCoSoTable;
 
 /* @var $this yii\web\View */
 /* @var $model modava\customer\models\CustomerOrder */
@@ -29,7 +30,7 @@ foreach (ArrayHelper::map(CustomerProductTable::getAll(Yii::$app->language), 'id
 }
 
 $model->ordered_at = date('d-m-Y H:i', $model->ordered_at != null ? is_numeric($model->ordered_at) ? $model->ordered_at : strtotime($model->ordered_at) : time());
-if(Yii::$app->controller->action->id == 'create') {
+if (Yii::$app->controller->action->id == 'create') {
     $validation_url = Url::toRoute(['validate-order', 'customer_id' => $model->customer_id]);
 } else {
     $validation_url = Url::toRoute(['validate-order', 'customer_id' => $model->customer_id, 'id' => $model->primaryKey]);
@@ -66,6 +67,10 @@ if(Yii::$app->controller->action->id == 'create') {
                         'todayHighLight' => true,
                     ]
                 ]) ?>
+            </div>
+            <div class="col-md-6 col-12">
+                <?php if ($model->co_so == null) $model->co_so = isset(Yii::$app->user->identity->co_so) ? Yii::$app->user->identity->co_so : null; ?>
+                <?= $form->field($model, 'co_so')->dropDownList(ArrayHelper::map(CustomerCoSoTable::getAllCoSo(), 'id', 'name'), []) ?>
             </div>
         </div>
         <div id="order-info">

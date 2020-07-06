@@ -73,23 +73,17 @@ $status_call_dathen = ArrayHelper::map(CustomerStatusCall::getStatusCallDatHen()
                                 return CustomerTable::SEX[$model->sex];
                             }
                         ],
-                        'phone',
+                        [
+                            'attribute' => 'phone',
+                            'format' => 'raw',
+                            'value' => function ($model) {
+                                return $model->getPhone();
+                            }
+                        ],
                         [
                             'attribute' => 'address',
                             'value' => function ($model) {
-                                $address = $model->address;
-                                if ($model->wardHasOne != null) {
-                                    if(trim($address) != '') $address .= ', ';
-                                    $address .= $model->wardHasOne->name;
-                                    if ($model->wardHasOne->districtHasOne != null) {
-                                        $address .= ', ' . $model->wardHasOne->districtHasOne->name;
-                                        if ($model->wardHasOne->districtHasOne->provinceHasOne != null) {
-                                            $address .= ', ' . $model->wardHasOne->districtHasOne->provinceHasOne->name;
-                                            if ($model->wardHasOne->districtHasOne->provinceHasOne->countryHasOne != null) $address .= ', ' . $model->wardHasOne->districtHasOne->provinceHasOne->countryHasOne->CommonName;
-                                        }
-                                    }
-                                }
-                                return $address;
+                                return $model->getAddress();
                             }
                         ],
                         [

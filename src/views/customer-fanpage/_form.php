@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-use common\widgets\Select2;
+use modava\select2\Select2;
 use yii\helpers\ArrayHelper;
 use backend\widgets\ToastrWidget;
 use modava\customer\CustomerModule;

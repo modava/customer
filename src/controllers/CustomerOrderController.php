@@ -44,9 +44,11 @@ class CustomerOrderController extends MyController
      * Lists all CustomerOrder models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($customer_id = null)
     {
-        $searchModel = new CustomerOrderSearch();
+        $searchModel = new CustomerOrderSearch([
+            'customer_id' => $customer_id
+        ]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

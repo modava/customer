@@ -102,7 +102,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'label' => CustomerModule::t('customer', 'Customer ID'),
                                                 'format' => 'raw',
                                                 'value' => function ($model) {
-                                                    return Html::a($model->orderHasOne->customerHasOne->name, ['/customer/clinic/view', 'id' => $model->orderHasOne->customerHasOne->id], [
+                                                    return Html::a($model->orderHasOne->customerHasOne->name, ['/customer/customer/view', 'id' => $model->orderHasOne->customerHasOne->id], [
                                                         'target' => '_blank',
                                                         'data-pjax' => 0
                                                     ]);

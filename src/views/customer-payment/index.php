@@ -13,6 +13,7 @@ use modava\customer\models\table\CustomerPaymentTable;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = CustomerModule::t('customer', 'Thanh toán');
+if ($searchModel->orderHasOne != null && $searchModel->orderHasOne->customerHasOne != null) $this->title .= ': ' . $searchModel->orderHasOne->customerHasOne->name . ' (' . $searchModel->orderHasOne->code . ')';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?= ToastrWidget::widget(['key' => 'toastr-' . $searchModel->toastr_key . '-index']) ?>
@@ -103,7 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'label' => CustomerModule::t('customer', 'Customers'),
                                                 'format' => 'raw',
                                                 'value' => function ($model) {
-                                                    return Html::a($model->orderHasOne->customerHasOne->name, ['/customer/clinic/view', 'id' => $model->orderHasOne->customerHasOne->id], [
+                                                    return Html::a($model->orderHasOne->customerHasOne->name, ['/customer/customer/view', 'id' => $model->orderHasOne->customerHasOne->id], [
                                                         'target' => '_blank',
                                                         'data-pjax' => 0
                                                     ]);

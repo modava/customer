@@ -50,11 +50,23 @@ $this->params['breadcrumbs'][] = $this->title;
                         'id',
                         [
                             'attribute' => 'orderHasOne.customerHasOne.name',
-                            'label' => CustomerModule::t('customer', 'Customers')
+                            'label' => CustomerModule::t('customer', 'Customer ID'),
+                            'format' => 'raw',
+                            'value' => function ($model) {
+                                return Html::a($model->orderHasOne->customerHasOne->name, ['/customer/customer/view', 'id' => $model->orderHasOne->customerHasOne->id], [
+                                    'target' => '_blank',
+                                ]);
+                            }
                         ],
                         [
                             'attribute' => 'orderHasOne.code',
-                            'label' => CustomerModule::t('customer', 'Order')
+                            'label' => CustomerModule::t('customer', 'Order ID'),
+                            'format' => 'raw',
+                            'value' => function ($model) {
+                                return Html::a($model->orderHasOne->code, ['/customer/customer-order/view', 'id' => $model->orderHasOne->id], [
+                                    'target' => '_blank',
+                                ]);
+                            }
                         ],
                         'co_so',
                         'time_start:datetime',

@@ -39,6 +39,9 @@ if ($model->wardHasOne != null) {
 
 $status_call_accept = ArrayHelper::map(CustomerStatusCallTable::getStatusCallDatHen(), 'id', 'id');
 $status_dat_hen_den = ArrayHelper::map(CustomerStatusDatHenTable::getDatHenDen(), 'id', 'id');
+
+$is_online = in_array($model->scenario, [Customer::SCENARIO_ONLINE, Customer::SCENARIO_ADMIN]);
+$is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCENARIO_CLINIC]);
 ?>
 <?= ToastrWidget::widget(['key' => 'toastr-' . $model->toastr_key . '-form']) ?>
     <div class="customer-form">
@@ -123,16 +126,23 @@ $status_dat_hen_den = ArrayHelper::map(CustomerStatusDatHenTable::getDatHenDen()
             </div>
         </div>
         <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
-        <hr>
-        <?php
-        if (in_array($model->scenario, [Customer::SCENARIO_ONLINE, Customer::SCENARIO_ADMIN])) {
-            if ($model->fanpageHasOne != null) {
-                $model->origin = $model->fanpageHasOne->originHasOne->id;
-                $model->agency = $model->fanpageHasOne->originHasOne->agencyHasMany[0]->id;
-            }
-            ?>
-            <h5 class="form-group">Thông tin Sales Online</h5>
+        <?php if ($model->scenario === Customer::SCENARIO_ADMIN) { ?>
             <div class="row">
+                <div class="col-md-6 col-12">
+                    <?= $form->field($model, 'type')->dropDownList(CustomerTable::TYPE, []) ?>
+                </div>
+            </div>
+        <?php } ?>
+        <hr>
+        <h5 class="form-group">Thông tin hệ thống</h5>
+        <?php
+        if ($model->fanpageHasOne != null) {
+            $model->origin = $model->fanpageHasOne->originHasOne->id;
+            $model->agency = $model->fanpageHasOne->originHasOne->agencyHasMany[0]->id;
+        }
+        ?>
+        <div class="row">
+            <?php if ($is_online) { ?>
                 <div class="col-md-6 col-12">
                     <?= $form->field($model, 'agency')->dropDownList(ArrayHelper::map(CustomerAgencyTable::getAllAgency(), 'id', 'name'), [
                         'prompt' => CustomerModule::t('customer', 'Chọn agency...'),
@@ -155,8 +165,6 @@ $status_dat_hen_den = ArrayHelper::map(CustomerStatusDatHenTable::getDatHenDen()
                         'load-data-method' => 'GET'
                     ])->label(CustomerModule::t('customer', 'Nguồn trực tuyến')) ?>
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6 col-12">
                     <?= $form->field($model, 'fanpage_id')->dropDownList(ArrayHelper::map(CustomerFanpageTable::getFanpageByOrigin($model->origin), 'id', 'name'), [
                         'prompt' => CustomerModule::t('customer', 'Chọn fanpage facebook...'),
@@ -169,100 +177,28 @@ $status_dat_hen_den = ArrayHelper::map(CustomerStatusDatHenTable::getDatHenDen()
                         'prompt' => CustomerModule::t('customer', 'Trạng thái gọi...')
                     ]) ?>
                 </div>
-            </div>
-            <div class="customer-status-call-fail"
-                 style="display: <?= $model->status_call != null && !in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
-                <div class="row">
-                    <div class="col-md-6 col-12">
-                        <?php
-                        if ($model->status_fail == null) {
-                            $model->remind_call = true;
-                        }
-                        echo $form->field($model, 'remind_call')->checkbox([
-                            'id' => 'remind-call'
-                        ]) ?>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 col-12 remind-call-time"
-                         style="display: <?= $model->remind_call == true ? 'block' : 'none' ?>">
-                        <?php
-                        if ($model->remind_call_time == null || $model->remind_call_time < time()) {
-                            $model->remind_call_time = date('d-m-Y H:i', strtotime(date('d-m-Y') . ' +1day') + 8 * Time::SECONDS_IN_AN_HOUR);
-                        } else {
-                            $model->remind_call_time = date('d-m-Y H:i', $model->remind_call_time);
-                        }
-                        echo $form->field($model, 'remind_call_time')->widget(CustomerDateTimePicker::class, [
-                            'template' => '{input}{button}',
-                            'pickButtonIcon' => 'btn btn-increment btn-light',
-                            'pickIconContent' => Html::tag('span', '', ['class' => 'glyphicon glyphicon-th']),
-                            'clientOptions' => [
-                                'autoclose' => true,
-                                'format' => 'dd-mm-yyyy hh:ii',
-                                'todayHighLight' => true,
-                                'startDate' => '-0d'
-                            ]
-                        ]) ?>
-                    </div>
-                    <div class="col-md-6 col-12">
-                        <?= $form->field($model, 'status_fail')->dropDownList(ArrayHelper::map(CustomerStatusFailTable::getAllStatusFail(), 'id', 'name'), [
-                            'prompt' => CustomerModule::t('customer', 'Lý do fail...')
-                        ]) ?>
-                    </div>
-                </div>
-            </div>
-            <div class="customer-status-call-success"
-                 style="display: <?= $model->status_call != null && in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
-                <div class="row">
-                    <div class="col-md-6 col-12">
-                        <?php
-                        if ($model->time_lich_hen != null) {
-                            $model->time_lich_hen = is_numeric($model->time_lich_hen) ? date('d-m-Y H:i', $model->time_lich_hen) : $model->time_lich_hen;
-                        }
-                        echo $form->field($model, 'time_lich_hen')->widget(CustomerDateTimePicker::class, [
-                            'template' => '{input}{button}',
-                            'pickButtonIcon' => 'btn btn-increment btn-light',
-                            'pickIconContent' => Html::tag('span', '', ['class' => 'glyphicon glyphicon-th']),
-                            'clientOptions' => [
-                                'autoclose' => true,
-                                'format' => 'dd-mm-yyyy hh:ii',
-                                'todayHighLight' => true,
-                            ]
-                        ]) ?>
-                    </div>
-                    <div class="col-md-6 col-12">
-                        <?= $form->field($model, 'co_so')->dropDownList(ArrayHelper::map(CustomerCoSoTable::getAllCoSo(), 'id', 'name'), [
-                            'prompt' => CustomerModule::t('customer', 'Chọn cơ sở...')
-                        ]) ?>
-                    </div>
-                </div>
-            </div>
-
-            <?= $form->field($model, 'sale_online_note')->textarea(['maxlength' => true, 'rows' => 5]) ?>
-        <?php } ?>
-        <?php if (in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCENARIO_CLINIC])) { ?>
-            <div class="clinic-content"
-                 style="display: <?= ($model->primaryKey == null && $model->scenario !== Customer::SCENARIO_ADMIN) || in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
-                <h5 class="form-group">Thông tin Direct Sales</h5>
-                <?php if ($model->primaryKey != null || $model->scenario === Customer::SCENARIO_ADMIN) { ?>
-                    <div class="row">
-                        <div class="col-md-6 col-12">
-                            <?= $form->field($model, 'status_dat_hen')->dropDownList(ArrayHelper::map(CustomerStatusDatHenTable::getAllDatHen(), 'id', 'name'), [
-                                'id' => 'status-dat-hen',
-                                'prompt' => 'Trạng thái đặt hẹn...'
-                            ]) ?>
-                        </div>
-                    </div>
-                <?php } ?>
-                <div class="status-dat-hen-den"
-                     style="display: <?= ($model->primaryKey == null && $model->scenario !== Customer::SCENARIO_ADMIN) || in_array($model->status_dat_hen, $status_dat_hen_den) ? 'block' : 'none' ?>;">
+                <div class="col-12 customer-status-call-fail"
+                     style="display: <?= $model->status_call != null && !in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
                     <div class="row">
                         <div class="col-md-6 col-12">
                             <?php
-                            if ($model->time_come != null) {
-                                $model->time_come = date('d-m-Y H:i', $model->time_come);
+                            if ($model->status_fail == null) {
+                                $model->remind_call = true;
                             }
-                            echo $form->field($model, 'time_come')->widget(CustomerDateTimePicker::class, [
+                            echo $form->field($model, 'remind_call')->checkbox([
+                                'id' => 'remind-call'
+                            ]) ?>
+                        </div>
+                        <div class="col-md-6 col-12"></div>
+                        <div class="col-md-6 col-12 remind-call-time"
+                             style="display: <?= $model->remind_call == true ? 'block' : 'none' ?>">
+                            <?php
+                            if ($model->remind_call_time == null || $model->remind_call_time < time()) {
+                                $model->remind_call_time = date('d-m-Y H:i', strtotime(date('d-m-Y') . ' +1day') + 8 * Time::SECONDS_IN_AN_HOUR);
+                            } else {
+                                $model->remind_call_time = date('d-m-Y H:i', $model->remind_call_time);
+                            }
+                            echo $form->field($model, 'remind_call_time')->widget(CustomerDateTimePicker::class, [
                                 'template' => '{input}{button}',
                                 'pickButtonIcon' => 'btn btn-increment btn-light',
                                 'pickIconContent' => Html::tag('span', '', ['class' => 'glyphicon glyphicon-th']),
@@ -270,22 +206,95 @@ $status_dat_hen_den = ArrayHelper::map(CustomerStatusDatHenTable::getDatHenDen()
                                     'autoclose' => true,
                                     'format' => 'dd-mm-yyyy hh:ii',
                                     'todayHighLight' => true,
-                                    'startDate' => '+0d'
+                                    'startDate' => '-0d'
                                 ]
                             ]) ?>
                         </div>
                         <div class="col-md-6 col-12">
-                            <?= $form->field($model, 'status_dong_y')->dropDownList(ArrayHelper::map(CustomerStatusDongYTable::getAll(), 'id', 'name'), [
-                                'prompt' => 'Trạng thái đồng ý...'
+                            <?= $form->field($model, 'status_fail')->dropDownList(ArrayHelper::map(CustomerStatusFailTable::getAllStatusFail(), 'id', 'name'), [
+                                'prompt' => CustomerModule::t('customer', 'Lý do fail...')
                             ]) ?>
                         </div>
                     </div>
                 </div>
-
-                <?= $form->field($model, 'direct_sale_note')->textarea(['maxlength' => true, 'rows' => 5]) ?>
+                <div class="col-md-6 col-12 customer-status-call-success"
+                     style="display: <?= $model->status_call != null && in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
+                    <?php
+                    if ($model->time_lich_hen != null) {
+                        $model->time_lich_hen = is_numeric($model->time_lich_hen) ? date('d-m-Y H:i', $model->time_lich_hen) : $model->time_lich_hen;
+                    }
+                    echo $form->field($model, 'time_lich_hen')->widget(CustomerDateTimePicker::class, [
+                        'template' => '{input}{button}',
+                        'pickButtonIcon' => 'btn btn-increment btn-light',
+                        'pickIconContent' => Html::tag('span', '', ['class' => 'glyphicon glyphicon-th']),
+                        'clientOptions' => [
+                            'autoclose' => true,
+                            'format' => 'dd-mm-yyyy hh:ii',
+                            'todayHighLight' => true,
+                        ]
+                    ]) ?>
+                </div>
+            <?php } ?>
+            <div class="col-md-6 col-12 customer-status-call-success"
+                 style="display: <?= $model->status_call != null && in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
+                <?= $form->field($model, 'co_so')->dropDownList(ArrayHelper::map(CustomerCoSoTable::getAllCoSo(), 'id', 'name'), [
+                    'prompt' => CustomerModule::t('customer', 'Chọn cơ sở...')
+                ]) ?>
             </div>
-        <?php } ?>
-
+            <?php if ($is_clinic) { ?>
+                <div class="col-12 clinic-content"
+                     style="display: <?= ($model->primaryKey == null && $model->scenario !== Customer::SCENARIO_ADMIN) || in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
+                    <div class="row">
+                        <?php if ($model->primaryKey != null || $model->scenario === Customer::SCENARIO_ADMIN) { ?>
+                            <div class="col-md-6 col-12">
+                                <?= $form->field($model, 'status_dat_hen')->dropDownList(ArrayHelper::map(CustomerStatusDatHenTable::getAllDatHen(), 'id', 'name'), [
+                                    'id' => 'status-dat-hen',
+                                    'prompt' => 'Trạng thái đặt hẹn...'
+                                ]) ?>
+                            </div>
+                        <?php } ?>
+                        <div class="col-12 status-dat-hen-den"
+                             style="display: <?= ($model->primaryKey == null && $model->scenario !== Customer::SCENARIO_ADMIN) || in_array($model->status_dat_hen, $status_dat_hen_den) ? 'block' : 'none' ?>;">
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <?php
+                                    if ($model->time_come != null) {
+                                        $model->time_come = date('d-m-Y H:i', $model->time_come);
+                                    }
+                                    echo $form->field($model, 'time_come')->widget(CustomerDateTimePicker::class, [
+                                        'template' => '{input}{button}',
+                                        'pickButtonIcon' => 'btn btn-increment btn-light',
+                                        'pickIconContent' => Html::tag('span', '', ['class' => 'glyphicon glyphicon-th']),
+                                        'clientOptions' => [
+                                            'autoclose' => true,
+                                            'format' => 'dd-mm-yyyy hh:ii',
+                                            'todayHighLight' => true,
+                                            'startDate' => '+0d'
+                                        ]
+                                    ]) ?>
+                                </div>
+                                <div class="col-md-6 col-12">
+                                    <?= $form->field($model, 'status_dong_y')->dropDownList(ArrayHelper::map(CustomerStatusDongYTable::getAll(), 'id', 'name'), [
+                                        'prompt' => 'Trạng thái đồng ý...'
+                                    ]) ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php } ?>
+            <?php if ($is_online) { ?>
+                <div class="col-12">
+                    <?= $form->field($model, 'sale_online_note')->textarea(['maxlength' => true, 'rows' => 5]) ?>
+                </div>
+            <?php } ?>
+            <?php if ($is_clinic) { ?>
+                <div class="col-12 clinic-content"
+                     style="display: <?= ($model->primaryKey == null && $model->scenario !== Customer::SCENARIO_ADMIN) || in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
+                    <?= $form->field($model, 'direct_sale_note')->textarea(['maxlength' => true, 'rows' => 5]) ?>
+                </div>
+            <?php } ?>
+        </div>
         <div class="form-group">
             <?= Html::submitButton(CustomerModule::t('customer', 'Save'), ['class' => 'btn btn-success']) ?>
         </div>

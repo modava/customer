@@ -15,6 +15,7 @@ use yii\behaviors\BlameableBehavior;
 use yii\db\ActiveRecord;
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 
 /**
  * This is the model class for table "customer".
@@ -105,7 +106,7 @@ class Customer extends CustomerTable
                         ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
                     ],
                 ],
-                'type' => [
+                [
                     'class' => AttributeBehavior::class,
                     'attributes' => [
                         ActiveRecord::EVENT_BEFORE_INSERT => ['type']
@@ -113,7 +114,16 @@ class Customer extends CustomerTable
                     'value' => function () {
                         if ($this->scenario === self::SCENARIO_ONLINE) return CustomerTable::TYPE_ONLINE;
                         if ($this->scenario === self::SCENARIO_CLINIC) return CustomerTable::TYPE_DIRECT;
-                        return CustomerTable::TYPE_ADMIN;
+                        return $this->type;
+                    }
+                ],
+                [
+                    'class' => AttributeBehavior::class,
+                    'attributes' => [
+                        ActiveRecord::EVENT_BEFORE_UPDATE => ['type']
+                    ],
+                    'value' => function () {
+                        return $this->type;
                     }
                 ],
                 /* SALES ONLINE */
@@ -213,6 +223,7 @@ class Customer extends CustomerTable
             [['sex', 'ward'], 'integer'],
             [['birthday'], 'date', 'format' => 'php:d-m-Y'],
             [['name', 'phone', 'address'], 'string', 'max' => 255],
+            [['type'], 'integer', 'on' => self::SCENARIO_ADMIN],
             /* SALES ONLINE */
             [['status_call'], 'required', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_ONLINE]],
             [['sale_online_note'], 'string', 'max' => 255, 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_ONLINE]],
@@ -319,6 +330,38 @@ class Customer extends CustomerTable
                 $this->addError('status_dong_y', 'Khách đã tạo đơn hàng, không thể chuyển về trạng thái không đồng ý');
             }
         }
+    }
+
+    public function getAddress()
+    {
+        $address = $this->address;
+        if ($this->wardHasOne != null) {
+            if (trim($address) != '') $address .= ', ';
+            $address .= $this->wardHasOne->Type . ' ' . $this->wardHasOne->name;
+            if ($this->wardHasOne->districtHasOne != null) {
+                $address .= ', ' . $this->wardHasOne->districtHasOne->Type . ' ' . $this->wardHasOne->districtHasOne->name;
+                if ($this->wardHasOne->districtHasOne->provinceHasOne != null) {
+                    $address .= ', ' . $this->wardHasOne->districtHasOne->provinceHasOne->Type . ' ' . $this->wardHasOne->districtHasOne->provinceHasOne->name;
+                    if ($this->wardHasOne->districtHasOne->provinceHasOne->countryHasOne != null) $address .= ', ' . $this->wardHasOne->districtHasOne->provinceHasOne->countryHasOne->CommonName;
+                }
+            }
+        }
+        return $address;
+    }
+
+    public function getPhone()
+    {
+        $content = '';
+        if (class_exists('modava\voip24h\CallCenter')) $content .= Html::a('<i class="fa fa-phone"></i>', 'javascript: void(0)', [
+            'class' => 'btn btn-xs btn-success call-to',
+            'title' => 'Gọi',
+            'data-uri' => $this->phone
+        ]);
+        $content .= Html::a('<i class="fa fa-paste"></i>', 'javascript: void(0)', [
+            'class' => 'btn btn-xs btn-info copy ml-1',
+            'title' => 'Copy'
+        ]);
+        return $content;
     }
 
     /**

@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-use common\widgets\Select2;
+use modava\select2\Select2;
 use yii\widgets\ActiveForm;
 use backend\widgets\ToastrWidget;
 use modava\customer\CustomerModule;
@@ -12,6 +12,7 @@ use modava\customer\components\CustomerDateTimePicker;
 use modava\customer\models\table\CustomerTable;
 use modava\customer\models\table\CustomerOrderTable;
 use modava\customer\models\table\CustomerPaymentTable;
+use modava\customer\models\table\CustomerCoSoTable;
 
 /* @var $this yii\web\View */
 /* @var $model modava\customer\models\CustomerPayment */
@@ -64,6 +65,10 @@ $model->payment_at = ($model->payment_at != null && is_numeric($model->payment_a
                         'todayHighLight' => true,
                     ]
                 ]) ?>
+            </div>
+            <div class="col-md-6 col-12">
+                <?php if ($model->co_so == null) $model->co_so = isset(Yii::$app->user->identity->co_so) ? Yii::$app->user->identity->co_so : null; ?>
+                <?= $form->field($model, 'co_so')->dropDownList(ArrayHelper::map(CustomerCoSoTable::getAllCoSo(), 'id', 'name'), []) ?>
             </div>
         </div>
 
