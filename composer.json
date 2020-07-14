@@ -25,7 +25,9 @@
     "yiisoft/yii2-bootstrap": "@dev",
     "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
     "modava/auth": "@dev",
-    "modava/select2": "@dev"
+    "modava/select2": "@dev",
+    "2amigos/yii2-date-picker-widget" : "*",
+    "2amigos/yii2-date-time-picker-widget" : "*"
   },
   "autoload": {
     "psr-4": {
