@@ -5,6 +5,7 @@ use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use backend\widgets\ToastrWidget;
 use modava\customer\CustomerModule;
+use modava\customer\models\table\CustomerStatusFailTable;
 
 /* @var $this yii\web\View */
 /* @var $model modava\customer\models\CustomerStatusFail */
@@ -19,6 +20,9 @@ use modava\customer\CustomerModule;
         </div>
         <div class="col-md-6 col-12">
             <?= $form->field($model, 'language')->dropDownList(['vi' => 'Vi', 'en' => 'En', 'jp' => 'Jp'], []) ?>
+        </div>
+        <div class="col-md-6 col-12">
+            <?= $form->field($model, 'type')->dropDownList(CustomerStatusFailTable::TYPE, []) ?>
         </div>
     </div>
 

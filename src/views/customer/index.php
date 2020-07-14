@@ -8,6 +8,8 @@ use backend\widgets\ToastrWidget;
 use yii\widgets\Pjax;
 use modava\customer\models\table\CustomerTable;
 use modava\customer\models\table\CustomerStatusDongYTable;
+use modava\customer\models\table\CustomerStatusCallTable;
+use modava\customer\models\table\CustomerStatusDatHenTable;
 
 /* @var $this yii\web\View */
 /* @var $searchModel modava\customer\models\search\CustomerSearch */
@@ -100,19 +102,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                                     'class' => 'd-none',
                                                 ],
                                             ],
+                                            'code',
                                             [
                                                 'attribute' => 'name',
                                                 'format' => 'raw',
                                                 'value' => function ($model) {
                                                     return Html::a($model->name, ['view', 'id' => $model->primaryKey], []);
-                                                }
-                                            ],
-                                            'birthday',
-                                            [
-                                                'attribute' => 'sex',
-                                                'value' => function ($model) {
-                                                    if ($model->sex === null || !array_key_exists($model->sex, CustomerTable::SEX)) return null;
-                                                    return CustomerTable::SEX[$model->sex];
                                                 }
                                             ],
                                             [
@@ -123,19 +118,63 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 }
                                             ],
                                             [
-                                                'attribute' => 'created_by',
-                                                'value' => 'userCreated.userProfile.fullname',
-                                                'headerOptions' => [
-                                                    'width' => 150,
-                                                ],
+                                                'attribute' => 'status_call',
+                                                'value' => function ($model) {
+                                                    return $model->statusCallHasOne->name;
+                                                }
                                             ],
                                             [
-                                                'attribute' => 'created_at',
-                                                'format' => 'date',
-                                                'headerOptions' => [
-                                                    'width' => 150,
-                                                ],
+                                                'attribute' => 'status_fail',
+                                                'value' => function ($model) {
+                                                    if ($model->statusCallHasOne == null || $model->statusCallHasOne->accept == CustomerStatusCallTable::STATUS_PUBLISHED || $model->statusFailHasOne == null) return null;
+                                                    return $model->statusFailHasOne->name;
+                                                }
                                             ],
+                                            [
+                                                'attribute' => 'time_lich_hen',
+                                                'value' => function ($model) {
+                                                    if ($model->time_lich_hen == null) return null;
+                                                    return date('H:i d-m-Y', $model->time_lich_hen);
+                                                }
+                                            ],
+                                            [
+                                                'attribute' => 'status_dat_hen',
+                                                'value' => function ($model) {
+                                                    if ($model->statusCallHasOne == null || $model->statusCallHasOne->accept != CustomerStatusCallTable::STATUS_PUBLISHED ||
+                                                        $model->statusDatHenHasOne == null) return null;
+                                                    return $model->statusDatHenHasOne->name;
+                                                }
+                                            ],
+                                            [
+                                                'attribute' => 'status_dong_y',
+                                                'value' => function ($model) {
+                                                    if ($model->statusDongYHasOne == null) return null;
+                                                    return $model->statusDongYHasOne->name;
+                                                }
+                                            ],
+                                            [
+                                                'attribute' => 'status_dong_y_fail',
+                                                'value' => function ($model) {
+                                                    if ($model->statusDongYFailHasOne == null) return null;
+                                                    return $model->statusDongYFailHasOne->name;
+                                                }
+                                            ],
+                                            [
+                                                'attribute' => 'permission_user',
+                                                'value' => function ($model) {
+                                                    if ($model->type != \modava\customer\models\Customer::TYPE_ONLINE) return null;
+                                                    return $model->permissionUserHasOne->userProfile->fullname;
+                                                }
+                                            ],
+                                            [
+                                                'attribute' => 'direct_sale',
+                                                'value' => function ($model) {
+                                                    if ($model->directSaleHasOne == null) return null;
+                                                    return $model->directSaleHasOne->userProfile->fullname;
+                                                }
+                                            ],
+                                            'sale_online_note',
+                                            'direct_sale_note',
                                             [
                                                 'class' => 'yii\grid\ActionColumn',
                                                 'header' => CustomerModule::t('customer', 'Actions'),
@@ -181,8 +220,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                                     },
                                                 ],
                                                 'headerOptions' => [
-                                                    'width' => 150,
+                                                    'width' => 120,
                                                 ],
+                                                'contentOptions' => [
+                                                    'class' => 'text-center'
+                                                ]
                                             ],
                                         ],
                                     ]); ?>

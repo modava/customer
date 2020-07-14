@@ -83,7 +83,7 @@ class CustomerStatusDongYTable extends \yii\db\ActiveRecord
         $key = 'redis-customer-status-dong-y-get-all-dong-y-' . $language;
         $data = $cache->get($key);
         if ($data == false) {
-            $data = self::find()->where(['language' => $language])->accepted()->published()->one();
+            $data = self::find()->where(['language' => $language])->accepted()->published()->all();
             $cache->set($key, $data);
         }
         return $data;

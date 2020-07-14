@@ -6,6 +6,7 @@ use yii\widgets\DetailView;
 use backend\widgets\ToastrWidget;
 use modava\customer\widgets\NavbarWidgets;
 use modava\customer\CustomerModule;
+use modava\customer\models\table\CustomerStatusFailTable;
 
 /* @var $this yii\web\View */
 /* @var $model modava\customer\models\CustomerStatusFail */
@@ -49,6 +50,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     'attributes' => [
                         'id',
                         'name',
+                        [
+                            'attribute' => 'type',
+                            'value' => function ($model) {
+                                return CustomerStatusFailTable::TYPE[$model->type];
+                            }
+                        ],
                         'description:ntext',
                         [
                             'attribute' => 'status',

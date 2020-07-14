@@ -36,9 +36,10 @@ if ($model->wardHasOne != null) {
     $model->province = $model->wardHasOne->districtHasOne->provinceHasOne->id;
     $model->country = $model->wardHasOne->districtHasOne->provinceHasOne->countryHasOne->id;
 }
-
 $status_call_accept = ArrayHelper::map(CustomerStatusCallTable::getStatusCallDatHen(), 'id', 'id');
 $status_dat_hen_den = ArrayHelper::map(CustomerStatusDatHenTable::getDatHenDen(), 'id', 'id');
+$status_dong_y = ArrayHelper::map(CustomerStatusDongYTable::getAllDongY(), 'id', 'id');
+$status_dong_y_fail = ArrayHelper::map(CustomerStatusFailTable::getAllStatusDongYFail(), 'id', 'name');
 
 $is_online = in_array($model->scenario, [Customer::SCENARIO_ONLINE, Customer::SCENARIO_ADMIN]);
 $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCENARIO_CLINIC]);
@@ -211,7 +212,7 @@ $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCE
                             ]) ?>
                         </div>
                         <div class="col-md-6 col-12">
-                            <?= $form->field($model, 'status_fail')->dropDownList(ArrayHelper::map(CustomerStatusFailTable::getAllStatusFail(), 'id', 'name'), [
+                            <?= $form->field($model, 'status_fail')->dropDownList(ArrayHelper::map(CustomerStatusFailTable::getAllStatusCallFail(), 'id', 'name'), [
                                 'prompt' => CustomerModule::t('customer', 'Lý do fail...')
                             ]) ?>
                         </div>
@@ -275,7 +276,14 @@ $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCE
                                 </div>
                                 <div class="col-md-6 col-12">
                                     <?= $form->field($model, 'status_dong_y')->dropDownList(ArrayHelper::map(CustomerStatusDongYTable::getAll(), 'id', 'name'), [
-                                        'prompt' => 'Trạng thái đồng ý...'
+                                        'prompt' => 'Trạng thái đồng ý...',
+                                        'id' => 'status_dong_y'
+                                    ]) ?>
+                                </div>
+                                <div class="col-md-6 col-12 status-dong-y-fail"
+                                     style="display: <?= $model->status_dong_y == null || in_array($model->status_dong_y, $status_dong_y) ? 'none' : 'block' ?>">
+                                    <?= $form->field($model, 'status_dong_y_fail')->dropDownList($status_dong_y_fail, [
+                                        'prompt' => 'Lý do chốt fail...'
                                     ]) ?>
                                 </div>
                             </div>
@@ -304,9 +312,11 @@ $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCE
 <?php
 $json_status_call_accept = json_encode(array_values($status_call_accept));
 $json_status_dat_hen_den = json_encode(array_values($status_dat_hen_den));
+$json_status_dong_y = json_encode(array_values($status_dong_y));
 $script = <<< JS
 var status_call_accept = $json_status_call_accept;
 var status_dat_hen_den = $json_status_dat_hen_den;
+var status_dong_y = $json_status_dong_y;
 JS;
 $this->registerJs($script, \yii\web\View::POS_HEAD);
 

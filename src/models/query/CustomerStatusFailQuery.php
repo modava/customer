@@ -21,6 +21,16 @@ class CustomerStatusFailQuery extends \yii\db\ActiveQuery
         return $this->andWhere([CustomerStatusFail::tableName() . '.status' => CustomerStatusFail::STATUS_DISABLED]);
     }
 
+    public function typeCall()
+    {
+        return $this->andWhere([CustomerStatusFail::tableName() . '.type' => CustomerStatusFail::TYPE_CALL_FAIL]);
+    }
+
+    public function typeDongY()
+    {
+        return $this->andWhere([CustomerStatusFail::tableName() . '.type' => CustomerStatusFail::TYPE_DONG_Y_FAIL]);
+    }
+
     public function sortDescById()
     {
         return $this->orderBy([CustomerStatusFail::tableName() . '.id' => SORT_DESC]);

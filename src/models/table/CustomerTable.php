@@ -58,7 +58,7 @@ class CustomerTable extends \yii\db\ActiveRecord
 
     public function getStatusFailHasOne()
     {
-        return $this->hasOne(CustomerStatusFailTable::class, ['id' => 'status_fail']);
+        return $this->hasOne(CustomerStatusFailTable::class, ['id' => 'status_fail'])->andWhere([CustomerStatusFailTable::tableName() . '.type' => CustomerStatusFailTable::TYPE_CALL_FAIL]);
     }
 
     public function getStatusDatHenHasOne()
@@ -69,6 +69,11 @@ class CustomerTable extends \yii\db\ActiveRecord
     public function getStatusDongYHasOne()
     {
         return $this->hasOne(CustomerStatusDongYTable::class, ['id' => 'status_dong_y']);
+    }
+
+    public function getStatusDongYFailHasOne()
+    {
+        return $this->hasOne(CustomerStatusFailTable::class, ['id' => 'status_dong_y_fail'])->andWhere([CustomerStatusFailTable::tableName() . '.type' => CustomerStatusFailTable::TYPE_DONG_Y_FAIL]);
     }
 
     public function getCoSoHasOne()

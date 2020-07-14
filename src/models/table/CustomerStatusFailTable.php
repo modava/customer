@@ -11,6 +11,12 @@ class CustomerStatusFailTable extends \yii\db\ActiveRecord
 {
     const STATUS_DISABLED = 0;
     const STATUS_PUBLISHED = 1;
+    const TYPE_CALL_FAIL = 0;
+    const TYPE_DONG_Y_FAIL = 1;
+    const TYPE = [
+        self::TYPE_CALL_FAIL => 'Lý do fail lịch',
+        self::TYPE_DONG_Y_FAIL => 'Lý do chốt fail'
+    ];
 
     public static function tableName()
     {
@@ -26,7 +32,8 @@ class CustomerStatusFailTable extends \yii\db\ActiveRecord
     {
         $cache = Yii::$app->cache;
         $keys = [
-            'redis-customer-status-fail-get-all-status-fail-' . $this->language
+            'redis-customer-status-fail-get-all-status-call-fail-' . $this->language,
+            'redis-customer-status-fail-get-all-status-dong-y-fail-' . $this->language
         ];
         foreach ($keys as $key) {
             $cache->delete($key);
@@ -38,7 +45,8 @@ class CustomerStatusFailTable extends \yii\db\ActiveRecord
     {
         $cache = Yii::$app->cache;
         $keys = [
-            'redis-customer-status-fail-get-all-status-fail-' . $this->language
+            'redis-customer-status-fail-get-all-status-call-fail-' . $this->language,
+            'redis-customer-status-fail-get-all-status-dong-y-fail-' . $this->language
         ];
         foreach ($keys as $key) {
             $cache->delete($key);
@@ -59,14 +67,27 @@ class CustomerStatusFailTable extends \yii\db\ActiveRecord
         return $data;
     }
 
-    public static function getAllStatusFail($language = null)
+    public static function getAllStatusCallFail($language = null)
     {
         $language = $language ?: Yii::$app->language;
         $cache = Yii::$app->cache;
-        $key = 'redis-customer-status-fail-get-all-status-fail-' . $language;
+        $key = 'redis-customer-status-fail-get-all-status-call-fail-' . $language;
         $data = $cache->get($key);
         if ($data == false) {
-            $data = self::find()->where(['language' => $language])->published()->all();
+            $data = self::find()->where(['language' => $language])->typeCall()->published()->all();
+            $cache->set($key, $data);
+        }
+        return $data;
+    }
+
+    public static function getAllStatusDongYFail($language = null)
+    {
+        $language = $language ?: Yii::$app->language;
+        $cache = Yii::$app->cache;
+        $key = 'redis-customer-status-fail-get-all-status-dong-y-fail-' . $language;
+        $data = $cache->get($key);
+        if ($data == false) {
+            $data = self::find()->where(['language' => $language])->typeDongY()->published()->all();
             $cache->set($key, $data);
         }
         return $data;

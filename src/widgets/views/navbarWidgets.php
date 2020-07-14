@@ -3,11 +3,12 @@
 use yii\helpers\Url;
 use modava\customer\CustomerModule;
 use modava\customer\models\search\RemindCallSearch;
+use backend\modules\user\models\User;
 
-$is_dev = Yii::$app->user->can('develop');
+$is_dev = Yii::$app->user->can(User::DEV);
 ?>
 <ul class="nav nav-tabs nav-sm nav-light mb-25">
-    <?php if ($is_dev || Yii::$app->user->can('customerCustomerIndex')) { ?>
+    <?php if ($is_dev || Yii::$app->user->can('customerCustomer')) { ?>
         <li class="nav-item mb-5">
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'customer') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer']); ?>"
@@ -15,6 +16,8 @@ $is_dev = Yii::$app->user->can('develop');
                 <i class="ion ion-ios-locate"></i><?= CustomerModule::t('customer', 'Customers'); ?>
             </a>
         </li>
+    <?php } ?>
+    <?php if ($is_dev || Yii::$app->user->can('customerRemind-call')) { ?>
         <li class="nav-item mb-5">
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'remind-call') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer/remind-call']); ?>">
@@ -23,27 +26,29 @@ $is_dev = Yii::$app->user->can('develop');
             </a>
         </li>
     <?php } ?>
-    <?php if ($is_dev || Yii::$app->user->can('customer-order') ||
-        Yii::$app->user->can('customer-payment') ||
-        Yii::$app->user->can('customer-treatment-schedule')) { ?>
+    <?php if ($is_dev || Yii::$app->user->can('customerCustomer-order')) { ?>
         <li class="nav-item mb-5">
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'customer-order') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer/customer-order']); ?>">
                 <i class="ion ion-ios-locate"></i><?= CustomerModule::t('customer', 'Customer Order'); ?>
             </a>
         </li>
+    <?php } ?>
+    <?php if ($is_dev || Yii::$app->user->can('customer-payment')) { ?>
         <li class="nav-item mb-5">
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'customer-payment') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer/customer-payment']); ?>">
                 <i class="ion ion-ios-locate"></i><?= CustomerModule::t('customer', 'Customer Payment'); ?>
             </a>
         </li>
-        <?php /*<li class="nav-item mb-5">
+    <?php } ?>
+    <?php if ($is_dev || Yii::$app->user->can('customer-treatment-schedule')) { ?>
+        <li class="nav-item mb-5">
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'customer-treatment-schedule') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer/customer-treatment-schedule']); ?>">
                 <i class="ion ion-ios-locate"></i><?= CustomerModule::t('customer', 'Customer Treatment Schedule'); ?>
             </a>
-        </li>*/ ?>
+        </li>
     <?php } ?>
     <?php if ($is_dev || Yii::$app->user->can('customer-status-fail')) { ?>
         <li class="nav-item mb-5">

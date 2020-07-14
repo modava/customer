@@ -36,6 +36,7 @@ use yii\helpers\Html;
  * @property int $status_fail Tiềm năng - Ở xa - Có con nhỏ ...
  * @property int $status_dat_hen Đặt hẹn đến - Đặt hẹn không đến
  * @property int $status_dong_y Đồng ý - Không đồng ý - Làm dịch vụ khác
+ * @property int $status_dong_y_fail Lý do khách từ chối làm dịch vụ
  * @property int $remind_call_time Khi nào nên gọi lại
  * @property int $time_lich_hen Thời gian lịch hẹn
  * @property int $time_come Thời gian khách đến
@@ -53,6 +54,7 @@ class Customer extends CustomerTable
     const SCENARIO_ADMIN = 'admin';
     const SCENARIO_ONLINE = 'online';
     const SCENARIO_CLINIC = 'clinic';
+    const PREFIX_CODE = 'HYUN-CUS';
 
     public $toastr_key = 'customer';
     public $country;
@@ -67,6 +69,7 @@ class Customer extends CustomerTable
         $status_call_dathen = ArrayHelper::map(CustomerStatusCall::getStatusCallDatHen(), 'id', 'id');
         $get_status_call_accept = CustomerStatusCallTable::getStatusCallDatHen();
         $get_status_dat_hen_accept = CustomerStatusDatHenTable::getDatHenDen();
+        $status_dong_y = ArrayHelper::map(CustomerStatusDongYTable::getAllDongY(), 'id', 'id');
         $status_call_accept = $get_status_call_accept[0]->id;
         $status_dat_hen_accept = $get_status_dat_hen_accept[0]->id;
         return array_merge(
@@ -191,6 +194,17 @@ class Customer extends CustomerTable
                         return $this->co_so;
                     }
                 ],
+                'status_dong_y_fail' => [
+                    'class' => AttributeBehavior::class,
+                    'attributes' => [
+                        ActiveRecord::EVENT_BEFORE_INSERT => ['status_dong_y_fail'],
+                        ActiveRecord::EVENT_BEFORE_UPDATE => ['status_dong_y_fail'],
+                    ],
+                    'value' => function () use ($status_dong_y) {
+                        if ($this->status_dong_y != null && !array_key_exists($this->status_dong_y, $status_dong_y)) return $this->status_dong_y_fail;
+                        return null;
+                    }
+                ],
                 'time_come' => [
                     'class' => AttributeBehavior::class,
                     'attributes' => [
@@ -204,7 +218,7 @@ class Customer extends CustomerTable
                         }
                         return $this->time_come;
                     }
-                ],
+                ]
             ]
         );
     }
@@ -216,6 +230,7 @@ class Customer extends CustomerTable
     {
         $status_call_dathen = ArrayHelper::map(CustomerStatusCall::getStatusCallDatHen(), 'id', 'id');
         $status_dat_hen_den = ArrayHelper::map(CustomerStatusDatHenTable::getDatHenDen(), 'id', 'id');
+        $status_dong_y = ArrayHelper::map(CustomerStatusDongYTable::getAllDongY(), 'id', 'id');
         return [
             /* ALL */
             [['name', 'phone'], 'required'],
@@ -255,11 +270,18 @@ class Customer extends CustomerTable
             }, 'whenClient' => "function(){
                 return " . json_encode(array_values($status_dat_hen_den)) . ".includes($('#status-dat-hen').val());
             }", 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_CLINIC]],
-            [['status_dat_hen'], 'required', 'when' => function () {
-                return $this->primaryKey != null;
+            [['status_dat_hen'], 'required', 'when' => function () use ($status_call_dathen) {
+                return in_array($this->status_call, $status_call_dathen);
             }, 'whenClient' => "function(){
-                return '" . $this->primaryKey . "' == '';
+                return " . json_encode(array_values($status_call_dathen)) . ".includes($('#status_call').val());
             }", 'on' => self::SCENARIO_CLINIC],
+            [['status_dong_y_fail'], 'required', 'when' => function () use ($status_dong_y) {
+                return $this->status_dong_y != null && !in_array($this->status_dong_y, $status_dong_y);
+            }, 'whenClient' => "function(){
+                var status_dong_y = parseInt($('#status_dong_y').val()) || null;
+                console.log(status_dong_y , " . json_encode(array_values($status_dong_y)) . ", " . json_encode(array_values($status_dong_y)) . ".includes(status_dong_y));
+                return status_dong_y !== null && !" . json_encode(array_values($status_dong_y)) . ".includes(status_dong_y);
+            }", 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_CLINIC]],
             [['status_dat_hen'], 'validateStatusDatHen', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_CLINIC]],
             [['status_dong_y'], 'validateStatusDongY', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_CLINIC]]
         ];
@@ -362,6 +384,17 @@ class Customer extends CustomerTable
             'title' => 'Copy'
         ]);
         return $content;
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        $status_call_dathen = ArrayHelper::map(CustomerStatusCall::getStatusCallDatHen(), 'id', 'id');
+        if (in_array($this->status_call, $status_call_dathen) && $this->code == null) {
+            $this->updateAttributes([
+                'code' => self::PREFIX_CODE . '-' . $this->co_so . '-' . $this->primaryKey
+            ]);
+        }
+        parent::afterSave($insert, $changedAttributes); // TODO: Change the autogenerated stub
     }
 
     /**
