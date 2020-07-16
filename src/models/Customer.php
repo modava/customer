@@ -82,7 +82,7 @@ class Customer extends CustomerTable
                         ActiveRecord::EVENT_BEFORE_INSERT => ['permission_user']
                     ],
                     'value' => function () {
-                        if ($this->permission_user != null) return $this->permission_user;
+                        if ($this->scenario === self::SCENARIO_ADMIN && $this->permission_user != null) return $this->permission_user;
                         return Yii::$app->user->id;
                     }
                 ],
@@ -109,23 +109,15 @@ class Customer extends CustomerTable
                         ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
                     ],
                 ],
-                [
+                'type' => [
                     'class' => AttributeBehavior::class,
                     'attributes' => [
-                        ActiveRecord::EVENT_BEFORE_INSERT => ['type']
-                    ],
-                    'value' => function () {
-                        if ($this->scenario === self::SCENARIO_ONLINE) return CustomerTable::TYPE_ONLINE;
-                        if ($this->scenario === self::SCENARIO_CLINIC) return CustomerTable::TYPE_DIRECT;
-                        return $this->type;
-                    }
-                ],
-                [
-                    'class' => AttributeBehavior::class,
-                    'attributes' => [
+                        ActiveRecord::EVENT_BEFORE_INSERT => ['type'],
                         ActiveRecord::EVENT_BEFORE_UPDATE => ['type']
                     ],
                     'value' => function () {
+                        if ($this->scenario === self::SCENARIO_ONLINE && $this->primaryKey == null) return CustomerTable::TYPE_ONLINE;
+                        if ($this->scenario === self::SCENARIO_CLINIC && $this->primaryKey == null) return CustomerTable::TYPE_DIRECT;
                         return $this->type;
                     }
                 ],
@@ -157,6 +149,7 @@ class Customer extends CustomerTable
                             if (is_numeric($this->remind_call_time)) return $this->remind_call_time;
                             return strtotime($this->remind_call_time);
                         }
+                        /* Mặc định nhắc lịch 8h ngày hôm sau */
                         return strtotime(date('d-m-Y') . ' +1day') + 8 * Time::SECONDS_IN_AN_HOUR; // Nếu không set nhắc lịch => nhắc lịch gọi vào 8h sáng ngày hôm sau
                     }
                 ],
@@ -181,10 +174,11 @@ class Customer extends CustomerTable
                         return $this->status_dat_hen;
                     }
                 ],
-                'co_so' => [
+                /*'co_so' => [
                     'class' => AttributeBehavior::class,
                     'attributes' => [
                         ActiveRecord::EVENT_BEFORE_INSERT => ['co_so'],
+                        ActiveRecord::EVENT_BEFORE_UPDATE => ['co_so'],
                     ],
                     'value' => function () {
                         if ($this->scenario === self::SCENARIO_CLINIC) {
@@ -193,7 +187,7 @@ class Customer extends CustomerTable
                         }
                         return $this->co_so;
                     }
-                ],
+                ],*/
                 'status_dong_y_fail' => [
                     'class' => AttributeBehavior::class,
                     'attributes' => [
@@ -238,42 +232,84 @@ class Customer extends CustomerTable
             [['sex', 'ward'], 'integer'],
             [['birthday'], 'date', 'format' => 'php:d-m-Y'],
             [['name', 'phone', 'address'], 'string', 'max' => 255],
-            [['type'], 'integer', 'on' => self::SCENARIO_ADMIN],
+            [['type'], 'integer', 'whenClient' => "function(){
+                var type = parseInt($('#select-type').val()) || null;
+                console.log('change type', type);
+                if(type == " . self::TYPE_ONLINE . "){
+                    var status_call = parseInt($('#status-call').val()) || null,
+                        status_dat_hen = parseInt($('#status-dat-hen').val()) || null;
+                    $('.permission-user, .agency, .origin, .fanpage-id, .status-call, .sale-online-note').slideDown();
+                    $('.direct-sale-note').hide();
+                    $('#status-call').trigger('change');
+                } else if(type == " . self::TYPE_DIRECT . "){
+                    $('.co-so, .clinic-content, .status-dat-hen-den').slideDown();
+                    $('.status-dat-hen').find('option').prop('selected', false).removeAttr('selected');
+                    $('.status-dat-hen').trigger('change');
+                    $('.permission-user, .agency, .origin, .fanpage-id, .status-call, .customer-status-call-fail, .sale-online-note').hide();
+                    $('.time-lich-hen, .status-dat-hen').hide();
+                }
+            }", 'on' => self::SCENARIO_ADMIN],
+            /* ADMIN */
+            [['status_call'], 'required', 'when' => function () {
+                return $this->type == self::TYPE_ONLINE;
+            }, 'whenClient' => "function(){
+                var type = parseInt($('#select-type').val()) || null;
+                return type == " . self::TYPE_ONLINE . ";
+            }", 'on' => [self::SCENARIO_ADMIN]],
+            [['time_lich_hen'], 'required', 'when' => function () use ($status_call_dathen) {
+                return $this->type == self::TYPE_ONLINE && $this->status_call != null && in_array($this->status_call, $status_call_dathen);
+            }, 'whenClient' => "function(){
+                var type = parseInt($('#select-type').val()) || null,
+                    status_call = $('#status-call').val() || null;
+                return type == " . self::TYPE_ONLINE . " && status_call != null && " . json_encode(array_values($status_call_dathen)) . ".includes(status_call);
+            }", 'on' => self::SCENARIO_ADMIN],
+            [['co_so'], 'required', 'when' => function () use ($status_call_dathen) {
+                return ($this->type === self::TYPE_ONLINE && $this->status_call != null && in_array($this->status_call, $status_call_dathen)) || $this->type === self::TYPE_DIRECT;
+            }, 'whenClient' => "function(){
+                var type = parseInt($('#select-type').val()) || null,
+                    status_call = $('#status-call').val() || null;
+                return (type == " . self::TYPE_ONLINE . " && status_call != null && " . json_encode(array_values($status_call_dathen)) . ".includes(status_call)) || type == " . self::TYPE_DIRECT . "            
+            }", 'on' => [self::SCENARIO_ADMIN]],
             /* SALES ONLINE */
-            [['status_call'], 'required', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_ONLINE]],
+            [['status_call'], 'required', 'on' => [self::SCENARIO_ONLINE]],
             [['sale_online_note'], 'string', 'max' => 255, 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_ONLINE]],
             [['direct_sale_note'], 'string', 'max' => 255, 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_CLINIC]],
             [['fanpage_id', 'status_call', 'status_fail', 'co_so'], 'integer', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_ONLINE]],
             [['co_so', 'time_lich_hen'], 'required', 'when' => function () use ($status_call_dathen) {
                 return $this->status_call != null && in_array($this->status_call, $status_call_dathen);
             }, 'whenClient' => "function(){
-                var status_call = $('#status_call').val() || null;
+                var status_call = $('#status-call').val() || null;
                 return status_call != null && " . json_encode(array_values($status_call_dathen)) . ".includes(status_call);
-            }", 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_ONLINE]],
+            }", 'on' => [self::SCENARIO_ONLINE]],
             [['remind_call_time'], 'required', 'when' => function () use ($status_call_dathen) {
                 return $this->status_call != null && !in_array($this->status_call, $status_call_dathen) && $this->remind_call == true;
             }, 'whenClient' => "function(){
-                var status_call = $('#status_call').val() || null;
+                var status_call = $('#status-call').val() || null;
                 return status_call != null && !" . json_encode(array_values($status_call_dathen)) . ".includes(status_call) && $('#remind-call').is(':checked');
             }", 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_ONLINE]],
             [['status_fail'], 'required', 'when' => function () use ($status_call_dathen) {
                 return $this->status_call != null && !in_array($this->status_call, $status_call_dathen) && $this->remind_call == false;
             }, 'whenClient' => "function(){
-                var status_call = $('#status_call').val() || null;
+                var status_call = $('#status-call').val() || null;
                 return status_call != null && !" . json_encode(array_values($status_call_dathen)) . ".includes(status_call) && !$('#remind-call').is(':checked');
             }", 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_ONLINE]],
             [['remind_call'], 'safe', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_ONLINE]],
             [['status_call'], 'validateStatusCall', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_ONLINE]],
+            [['permission_user'], 'required', 'on' => [self::SCENARIO_ADMIN]],
+            [['permission_user'], 'integer', 'on' => [self::SCENARIO_ADMIN]],
             /* CLINIC */
-            [['status_dong_y', 'time_come'], 'required', 'when' => function () use ($status_dat_hen_den) {
-                return in_array($this->status_dat_hen, $status_dat_hen_den);
+            [['co_so'], 'required', 'on' => [self::SCENARIO_CLINIC]],
+            [['status_dong_y', 'time_come'], 'required', 'when' => function () use ($status_call_dathen, $status_dat_hen_den) {
+                return ($this->type === self::TYPE_ONLINE && in_array($this->status_call, $status_call_dathen) && in_array($this->status_dat_hen, $status_dat_hen_den)) || ($this->type == self::TYPE_DIRECT);
             }, 'whenClient' => "function(){
-                return " . json_encode(array_values($status_dat_hen_den)) . ".includes($('#status-dat-hen').val());
+                var type = parseInt($('#select-type').val()) || null,
+                    status_call = parseInt($('#status-call').val()) || null;
+                return (type === " . self::TYPE_ONLINE . " && " . json_encode(array_values($status_call_dathen)) . ".includes(status_call) && " . json_encode(array_values($status_dat_hen_den)) . ".includes($('#status-dat-hen').val())) || (type === " . self::TYPE_DIRECT . ");
             }", 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_CLINIC]],
             [['status_dat_hen'], 'required', 'when' => function () use ($status_call_dathen) {
                 return in_array($this->status_call, $status_call_dathen);
             }, 'whenClient' => "function(){
-                return " . json_encode(array_values($status_call_dathen)) . ".includes($('#status_call').val());
+                return " . json_encode(array_values($status_call_dathen)) . ".includes($('#status-call').val());
             }", 'on' => self::SCENARIO_CLINIC],
             [['status_dong_y_fail'], 'required', 'when' => function () use ($status_dong_y) {
                 return $this->status_dong_y != null && !in_array($this->status_dong_y, $status_dong_y);
@@ -283,7 +319,7 @@ class Customer extends CustomerTable
                 return status_dong_y !== null && !" . json_encode(array_values($status_dong_y)) . ".includes(status_dong_y);
             }", 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_CLINIC]],
             [['status_dat_hen'], 'validateStatusDatHen', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_CLINIC]],
-            [['status_dong_y'], 'validateStatusDongY', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_CLINIC]]
+            [['status_dong_y'], 'validateStatusDongY', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_CLINIC]],
         ];
     }
 

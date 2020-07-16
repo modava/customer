@@ -1,5 +1,6 @@
 <?php
 
+use modava\auth\models\User;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
@@ -34,11 +35,15 @@ $status_call_dathen = ArrayHelper::map(CustomerStatusCall::getStatusCallDatHen()
                         class="ion ion-md-apps"></span></span><?= Html::encode($this->title) ?>
         </h4>
         <p>
-            <?php if (in_array($model->scenario, [Customer::SCENARIO_CLINIC, Customer::SCENARIO_ADMIN]) && $model->statusDongYHasOne != null && $model->statusDongYHasOne->accept == CustomerStatusDongYTable::STATUS_PUBLISHED) { ?>
-                <?= Html::a('<i class="fa fa-plus"></i> ' . CustomerModule::t('customer', 'Order'), ['/customer/customer-order/create', 'customer_id' => $model->primaryKey], [
-                    'class' => 'btn btn-success'
-                ]) ?>
-            <?php } ?>
+            <?php if (Yii::$app->user->can(User::DEV) ||
+                Yii::$app->user->can('customer') ||
+                Yii::$app->user->can('customerCustomer-orderCreate')) { ?>
+                <?php if (in_array($model->scenario, [Customer::SCENARIO_CLINIC, Customer::SCENARIO_ADMIN]) && $model->statusDongYHasOne != null && $model->statusDongYHasOne->accept == CustomerStatusDongYTable::STATUS_PUBLISHED) { ?>
+                    <?= Html::a('<i class="fa fa-plus"></i> ' . CustomerModule::t('customer', 'Order'), ['/customer/customer-order/create', 'customer_id' => $model->primaryKey], [
+                        'class' => 'btn btn-success'
+                    ]) ?>
+                <?php }
+            } ?>
             <a class="btn btn-outline-light" href="<?= Url::to(['create']); ?>"
                title="<?= CustomerModule::t('customer', 'Create'); ?>">
                 <i class="fa fa-plus"></i> <?= CustomerModule::t('customer', 'Create'); ?></a>
@@ -118,7 +123,7 @@ $status_call_dathen = ArrayHelper::map(CustomerStatusCall::getStatusCallDatHen()
                         ],
                         [
                             'attribute' => 'remind_call_time',
-                            'visible' => !in_array($model->status_call, $status_call_dathen) && $model->status_fail == null,
+                            'visible' => $model->type == Customer::TYPE_ONLINE && !in_array($model->status_call, $status_call_dathen) && $model->status_fail == null,
                             'value' => function ($model) {
                                 if ($model->remind_call_time == null) return null;
                                 return date('d-m-Y H:i', $model->remind_call_time);
@@ -126,7 +131,7 @@ $status_call_dathen = ArrayHelper::map(CustomerStatusCall::getStatusCallDatHen()
                         ],
                         [
                             'attribute' => 'status_fail',
-                            'visible' => in_array($model->scenario, [Customer::SCENARIO_ONLINE, Customer::SCENARIO_ADMIN]) && $model->status_fail != null && $model->statusCallHasOne != null && $model->statusCallHasOne->accept == CustomerStatusCallTable::STATUS_DISABLED,
+                            'visible' => $model->type == Customer::TYPE_ONLINE && $model->status_fail != null && $model->statusCallHasOne != null && $model->statusCallHasOne->accept == CustomerStatusCallTable::STATUS_DISABLED,
                             'value' => function ($model) {
                                 if ($model->statusFailHasOne == null) return null;
                                 return $model->statusFailHasOne->name;
@@ -150,7 +155,7 @@ $status_call_dathen = ArrayHelper::map(CustomerStatusCall::getStatusCallDatHen()
                         ],
                         [
                             'attribute' => 'time_come',
-                            'visible' => in_array($model->scenario, [Customer::SCENARIO_CLINIC, Customer::SCENARIO_ADMIN]) && $model->statusDatHenHasOne != null && $model->statusDatHenHasOne->accept == CustomerStatusDatHenTable::STATUS_PUBLISHED,
+                            'visible' => ($model->type == Customer::TYPE_ONLINE && $model->statusDatHenHasOne != null && $model->statusDatHenHasOne->accept == CustomerStatusDatHenTable::STATUS_PUBLISHED) || $model->type == Customer::TYPE_DIRECT,
                             'value' => function ($model) {
                                 if ($model->time_come == null) return null;
                                 return date('d-m-Y H:i', $model->time_come);
@@ -158,10 +163,18 @@ $status_call_dathen = ArrayHelper::map(CustomerStatusCall::getStatusCallDatHen()
                         ],
                         [
                             'attribute' => 'status_dong_y',
-                            'visible' => in_array($model->scenario, [Customer::SCENARIO_CLINIC, Customer::SCENARIO_ADMIN]) && $model->statusDatHenHasOne != null && $model->statusDatHenHasOne->accept == CustomerStatusDatHenTable::STATUS_PUBLISHED,
+                            'visible' => ($model->type == Customer::TYPE_ONLINE && $model->statusDatHenHasOne != null && $model->statusDatHenHasOne->accept == CustomerStatusDatHenTable::STATUS_PUBLISHED) || $model->type == Customer::TYPE_DIRECT,
                             'value' => function ($model) {
                                 if ($model->statusDongYHasOne == null) return null;
                                 return $model->statusDongYHasOne->name;
+                            }
+                        ],
+                        [
+                            'attribute' => 'status_dong_y_fail',
+                            'visible' => $model->statusDongYHasOne != null && $model->statusDongYHasOne->accept == CustomerStatusDongYTable::STATUS_DISABLED,
+                            'value' => function ($model) {
+                                if ($model->statusDongYFailHasOne == null) return null;
+                                return $model->statusDongYFailHasOne->name;
                             }
                         ],
                         [
@@ -178,7 +191,7 @@ $status_call_dathen = ArrayHelper::map(CustomerStatusCall::getStatusCallDatHen()
                         ],
                         [
                             'attribute' => 'direct_sale_note',
-                            'visible' => in_array($model->scenario, [Customer::SCENARIO_CLINIC, Customer::SCENARIO_ADMIN]) && $model->type == CustomerTable::TYPE_ONLINE
+                            'visible' => $model->type == CustomerTable::TYPE_DIRECT || ($model->type == CustomerTable::TYPE_ONLINE && $model->statusDatHenHasOne != null && $model->statusDatHenHasOne->accept == CustomerStatusDatHenTable::STATUS_PUBLISHED)
                         ],
                         'created_at:datetime',
                         'updated_at:datetime',

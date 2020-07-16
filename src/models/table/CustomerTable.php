@@ -2,8 +2,8 @@
 
 namespace modava\customer\models\table;
 
-use backend\modules\user\models\User;
 use cheatsheet\Time;
+use modava\auth\models\User;
 use modava\customer\CustomerModule;
 use modava\location\models\table\LocationWardTable;
 use Yii;

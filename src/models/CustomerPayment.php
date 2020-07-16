@@ -54,7 +54,10 @@ class CustomerPayment extends CustomerPaymentTable
                 ],
                 'payment_at' => [
                     'class' => AttributeBehavior::class,
-                    'attributes' => [],
+                    'attributes' => [
+                        ActiveRecord::EVENT_BEFORE_INSERT => 'payment_at',
+                        ActiveRecord::EVENT_BEFORE_UPDATE => 'payment_at',
+                    ],
                     'value' => function () {
                         if (is_string($this->payment_at)) return strtotime($this->payment_at);
                         if (is_numeric($this->payment_at)) return $this->payment_at;

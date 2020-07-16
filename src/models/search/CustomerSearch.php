@@ -48,7 +48,7 @@ class CustomerSearch extends Customer
         if ($this->scenario === self::SCENARIO_ONLINE) {
             $query->andWhere([self::tableName() . '.type' => self::TYPE_ONLINE]);
         }
-        if($this->scenario === self::SCENARIO_CLINIC){
+        if ($this->scenario === self::SCENARIO_CLINIC) {
             $query->joinWith(['statusCallHasOne'])->where([CustomerStatusCallTable::tableName() . '.accept' => CustomerStatusCallTable::STATUS_PUBLISHED]);
         }
 

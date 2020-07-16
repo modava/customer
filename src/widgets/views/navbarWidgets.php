@@ -8,7 +8,11 @@ use backend\modules\user\models\User;
 $is_dev = Yii::$app->user->can(User::DEV);
 ?>
 <ul class="nav nav-tabs nav-sm nav-light mb-25">
-    <?php if ($is_dev || Yii::$app->user->can('customerCustomer')) { ?>
+    <?php if ($is_dev ||
+        Yii::$app->user->can('customer') ||
+        Yii::$app->user->can('customerCustomer') ||
+        Yii::$app->user->can('customerCustomerIndex') ||
+        Yii::$app->user->can('customerCustomerView')) { ?>
         <li class="nav-item mb-5">
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'customer') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer']); ?>"
@@ -17,16 +21,24 @@ $is_dev = Yii::$app->user->can(User::DEV);
             </a>
         </li>
     <?php } ?>
-    <?php if ($is_dev || Yii::$app->user->can('customerRemind-call')) { ?>
+    <?php if ($is_dev ||
+        Yii::$app->user->can('customer') ||
+        Yii::$app->user->can('customerRemind-call') ||
+        Yii::$app->user->can('customerRemind-callIndex') ||
+        Yii::$app->user->can('customerRemind-callView')) { ?>
         <li class="nav-item mb-5">
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'remind-call') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer/remind-call']); ?>">
                 <i class="ion ion-ios-locate"></i><?= CustomerModule::t('remind-call', 'Remind Call'); ?>
-                <div class="badge badge-danger badge-pill"><?= RemindCallSearch::getSalesOnlineRemindCall(isset($this->params['userRoleName']) && !in_array($this->params['userRoleName'], [])) ? Yii::$app->user->id : null ?></div>
+                <div class="badge badge-danger badge-pill"><?= RemindCallSearch::getSalesOnlineRemindCall(isset($this->params['userRoleName']) && !in_array($this->params['userRoleName'], ['sales_online']) ? Yii::$app->user->id : null) ?></div>
             </a>
         </li>
     <?php } ?>
-    <?php if ($is_dev || Yii::$app->user->can('customerCustomer-order')) { ?>
+    <?php if ($is_dev ||
+        Yii::$app->user->can('customer') ||
+        Yii::$app->user->can('customerCustomer-order') ||
+        Yii::$app->user->can('customerCustomer-orderIndex') ||
+        Yii::$app->user->can('customerCustomer-orderView')) { ?>
         <li class="nav-item mb-5">
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'customer-order') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer/customer-order']); ?>">
@@ -34,7 +46,11 @@ $is_dev = Yii::$app->user->can(User::DEV);
             </a>
         </li>
     <?php } ?>
-    <?php if ($is_dev || Yii::$app->user->can('customer-payment')) { ?>
+    <?php if ($is_dev ||
+        Yii::$app->user->can('customer') ||
+        Yii::$app->user->can('customerCustomer-payment') ||
+        Yii::$app->user->can('customerCustomer-paymentIndex') ||
+        Yii::$app->user->can('customerCustomer-paymentView')) { ?>
         <li class="nav-item mb-5">
             <a class="nav-link link-icon-left<?php if (Yii::$app->controller->id == 'customer-payment') echo ' active' ?>"
                href="<?= Url::toRoute(['/customer/customer-payment']); ?>">

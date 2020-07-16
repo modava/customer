@@ -85,7 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             }
                         ],
                         'co_so',
-                        'payment_at',
+                        'payment_at:datetime',
                         'created_at:datetime',
                         'updated_at:datetime',
                         [

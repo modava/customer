@@ -94,7 +94,7 @@ class RemindCallSearch extends Customer
             ->joinWith(['statusCallHasOne'])
             ->where(['<>', CustomerStatusCallTable::tableName() . '.accept', CustomerStatusCallTable::STATUS_PUBLISHED])
             ->andWhere([self::tableName() . '.status_fail' => null])
-            ->andWhere(['BETWEEN', self::tableName().'.remind_call_time', $today, $today + 86399]);
+            ->andWhere(['BETWEEN', self::tableName() . '.remind_call_time', $today, $today + 86399]);
         if ($user_id != null) {
             $query->andWhere([self::tableName() . '.permission_user' => $user_id]);
         }

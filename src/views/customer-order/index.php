@@ -101,10 +101,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                             ],
                                             [
                                                 'attribute' => 'customer_id',
-                                                'format' => 'html',
+                                                'format' => 'raw',
                                                 'label' => CustomerModule::t('customer', 'Customers'),
                                                 'value' => function ($model) {
-                                                    return Html::a($model->customerHasOne->name, ['view', 'id' => $model->id], []);
+                                                    return Html::a($model->customerHasOne->name, ['/customer/customer/view', 'id' => $model->customerHasOne->id], [
+                                                        'target' => '_blank',
+                                                        'data-pjax' => 0,
+                                                    ]);
                                                 }
                                             ],
                                             [
@@ -138,8 +141,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                             [
                                                 'class' => 'yii\grid\ActionColumn',
                                                 'header' => CustomerModule::t('customer', 'Actions'),
-                                                'template' => '<div>{update} {delete}</div><div class="mt-1">{payment} {list-payment}</div>',
+                                                'template' => '<div>{view} {update} {delete}</div><div class="mt-1">{payment} {list-payment}</div>',
                                                 'buttons' => [
+                                                    'view' => function ($url, $model) {
+                                                        return Html::a('<span class="glyphicon glyphicon-search"></span>', $url, [
+                                                            'title' => CustomerModule::t('customer', 'View'),
+                                                            'alia-label' => CustomerModule::t('customer', 'View'),
+                                                            'data-pjax' => 0,
+                                                            'class' => 'btn btn-success btn-xs'
+                                                        ]);
+                                                    },
                                                     'update' => function ($url, $model) {
                                                         return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
                                                             'title' => CustomerModule::t('customer', 'Update'),

@@ -7,9 +7,8 @@ $(function(){
             $('.status-dat-hen-den').hide().find('.has-error').removeClass('has-error').find('.help-block').html('');
         }
     });
-    $('#status_dong_y').on('change', function(){
+    $('#status-dong-y').on('change', function(){
         var status = parseInt($(this).val()) || null;
-        console.log(status, status_dong_y);
         if(status !== null && !status_dong_y.includes(status)){
             $('.status-dong-y-fail').slideDown();
         } else {

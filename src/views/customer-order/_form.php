@@ -69,7 +69,12 @@ if (Yii::$app->controller->action->id == 'create') {
                 ]) ?>
             </div>
             <div class="col-md-6 col-12">
-                <?php if ($model->co_so == null) $model->co_so = isset(Yii::$app->user->identity->co_so) ? Yii::$app->user->identity->co_so : null; ?>
+                <?php
+                if ($model->co_so == null) {
+                    if (isset(Yii::$app->user->identity->co_so)) $model->co_so = Yii::$app->user->identity->co_so;
+                    else $model->co_so = $model->customerHasOne->co_so;
+                }
+                ?>
                 <?= $form->field($model, 'co_so')->dropDownList(ArrayHelper::map(CustomerCoSoTable::getAllCoSo(), 'id', 'name'), []) ?>
             </div>
         </div>

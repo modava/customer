@@ -6,10 +6,9 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use backend\widgets\ToastrWidget;
 use yii\widgets\Pjax;
-use modava\customer\models\table\CustomerTable;
+use modava\auth\models\User;
 use modava\customer\models\table\CustomerStatusDongYTable;
 use modava\customer\models\table\CustomerStatusCallTable;
-use modava\customer\models\table\CustomerStatusDatHenTable;
 
 /* @var $this yii\web\View */
 /* @var $searchModel modava\customer\models\search\CustomerSearch */
@@ -27,11 +26,15 @@ $this->params['breadcrumbs'][] = $this->title;
             <h4 class="hk-pg-title"><span class="pg-title-icon"><span
                             class="ion ion-md-apps"></span></span><?= Html::encode($this->title) ?>
             </h4>
-            <div class="mb-0">
-                <a class="btn btn-outline-light" href="<?= \yii\helpers\Url::to(['create']); ?>"
-                   title="<?= CustomerModule::t('customer', 'Create'); ?> (Sales Online)">
-                    <i class="fa fa-plus"></i> <?= CustomerModule::t('customer', 'Create'); ?></a>
-            </div>
+            <?php if (Yii::$app->user->can(User::DEV) ||
+                Yii::$app->user->can('customer') ||
+                Yii::$app->user->can('customerCustomerCreate')) { ?>
+                <div class="mb-0">
+                    <a class="btn btn-outline-light" href="<?= \yii\helpers\Url::to(['create']); ?>"
+                       title="<?= CustomerModule::t('customer', 'Create'); ?> (Sales Online)">
+                        <i class="fa fa-plus"></i> <?= CustomerModule::t('customer', 'Create'); ?></a>
+                </div>
+            <?php } ?>
         </div>
 
         <!-- Row -->
@@ -120,6 +123,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                             [
                                                 'attribute' => 'status_call',
                                                 'value' => function ($model) {
+                                                    if ($model->statusCallHasOne == null) return null;
                                                     return $model->statusCallHasOne->name;
                                                 }
                                             ],
@@ -181,42 +185,62 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'template' => '<div>{update} {delete}</div><div class="mt-1">{create-order} {list-order}</div>',
                                                 'buttons' => [
                                                     'update' => function ($url, $model) {
-                                                        return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
-                                                            'title' => CustomerModule::t('customer', 'Update'),
-                                                            'alia-label' => CustomerModule::t('customer', 'Update'),
-                                                            'data-pjax' => 0,
-                                                            'class' => 'btn btn-info btn-xs'
-                                                        ]);
+                                                        if (Yii::$app->user->can(User::DEV) ||
+                                                            Yii::$app->user->can('customer') ||
+                                                            Yii::$app->user->can('customerCustomerUpdate')) {
+                                                            return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
+                                                                'title' => CustomerModule::t('customer', 'Update'),
+                                                                'alia-label' => CustomerModule::t('customer', 'Update'),
+                                                                'data-pjax' => 0,
+                                                                'class' => 'btn btn-info btn-xs'
+                                                            ]);
+                                                        }
+                                                        return null;
                                                     },
                                                     'delete' => function ($url, $model) {
-                                                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', 'javascript:;', [
-                                                            'title' => CustomerModule::t('customer', 'Delete'),
-                                                            'class' => 'btn btn-danger btn-xs btn-del',
-                                                            'data-title' => CustomerModule::t('customer', 'Delete?'),
-                                                            'data-pjax' => 0,
-                                                            'data-url' => $url,
-                                                            'btn-success-class' => 'success-delete',
-                                                            'btn-cancel-class' => 'cancel-delete',
-                                                            'data-placement' => 'top'
-                                                        ]);
+                                                        if (Yii::$app->user->can(User::DEV) ||
+                                                            Yii::$app->user->can('customer') ||
+                                                            Yii::$app->user->can('customerCustomerDelete')) {
+                                                            return Html::a('<span class="glyphicon glyphicon-trash"></span>', 'javascript:;', [
+                                                                'title' => CustomerModule::t('customer', 'Delete'),
+                                                                'class' => 'btn btn-danger btn-xs btn-del',
+                                                                'data-title' => CustomerModule::t('customer', 'Delete?'),
+                                                                'data-pjax' => 0,
+                                                                'data-url' => $url,
+                                                                'btn-success-class' => 'success-delete',
+                                                                'btn-cancel-class' => 'cancel-delete',
+                                                                'data-placement' => 'top'
+                                                            ]);
+                                                        }
+                                                        return null;
                                                     },
                                                     'create-order' => function ($url, $model) {
-                                                        if ($model->statusDongYHasOne == null || $model->statusDongYHasOne->accept != CustomerStatusDongYTable::STATUS_PUBLISHED) return null;
-                                                        return Html::a('<span class="glyphicon glyphicon-plus"></span>', ['/customer/customer-order/create', 'customer_id' => $model->id], [
-                                                            'title' => CustomerModule::t('customer', 'Create Cart'),
-                                                            'alia-label' => CustomerModule::t('customer', 'Create Cart'),
-                                                            'data-pjax' => 0,
-                                                            'class' => 'btn btn-success btn-xs'
-                                                        ]);
+                                                        if (Yii::$app->user->can(User::DEV) ||
+                                                            Yii::$app->user->can('customer') ||
+                                                            Yii::$app->user->can('customerCustomer-orderCreate')) {
+                                                            if ($model->statusDongYHasOne == null || $model->statusDongYHasOne->accept != CustomerStatusDongYTable::STATUS_PUBLISHED) return null;
+                                                            return Html::a('<span class="glyphicon glyphicon-plus"></span>', ['/customer/customer-order/create', 'customer_id' => $model->id], [
+                                                                'title' => CustomerModule::t('customer', 'Create Cart'),
+                                                                'alia-label' => CustomerModule::t('customer', 'Create Cart'),
+                                                                'data-pjax' => 0,
+                                                                'class' => 'btn btn-success btn-xs'
+                                                            ]);
+                                                        }
+                                                        return null;
                                                     },
                                                     'list-order' => function ($url, $model) {
-                                                        if ($model->statusDongYHasOne == null || $model->statusDongYHasOne->accept != CustomerStatusDongYTable::STATUS_PUBLISHED) return null;
-                                                        return Html::a('<span class="glyphicon glyphicon-shopping-cart"></span>', ['/customer/customer-order/index', 'customer_id' => $model->id], [
-                                                            'title' => CustomerModule::t('customer', 'List Cart'),
-                                                            'alia-label' => CustomerModule::t('customer', 'List Cart'),
-                                                            'data-pjax' => 0,
-                                                            'class' => 'btn btn-success btn-xs'
-                                                        ]);
+                                                        if (Yii::$app->user->can(User::DEV) ||
+                                                            Yii::$app->user->can('customer') ||
+                                                            Yii::$app->user->can('customerCustomer-orderIndex')) {
+                                                            if ($model->statusDongYHasOne == null || $model->statusDongYHasOne->accept != CustomerStatusDongYTable::STATUS_PUBLISHED) return null;
+                                                            return Html::a('<span class="glyphicon glyphicon-shopping-cart"></span>', ['/customer/customer-order/index', 'customer_id' => $model->id], [
+                                                                'title' => CustomerModule::t('customer', 'List Cart'),
+                                                                'alia-label' => CustomerModule::t('customer', 'List Cart'),
+                                                                'data-pjax' => 0,
+                                                                'class' => 'btn btn-success btn-xs'
+                                                            ]);
+                                                        }
+                                                        return null;
                                                     },
                                                 ],
                                                 'headerOptions' => [

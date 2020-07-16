@@ -20,9 +20,12 @@ use modava\customer\models\table\CustomerStatusDatHenTable;
 use modava\customer\models\table\CustomerStatusDongYTable;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use modava\auth\models\User;
+use common\models\UserProfile;
 use yii\widgets\ActiveForm;
 use backend\widgets\ToastrWidget;
 use modava\customer\CustomerModule;
+use modava\select2\Select2;
 
 /* @var $this yii\web\View */
 /* @var $model modava\customer\models\Customer */
@@ -40,6 +43,7 @@ $status_call_accept = ArrayHelper::map(CustomerStatusCallTable::getStatusCallDat
 $status_dat_hen_den = ArrayHelper::map(CustomerStatusDatHenTable::getDatHenDen(), 'id', 'id');
 $status_dong_y = ArrayHelper::map(CustomerStatusDongYTable::getAllDongY(), 'id', 'id');
 $status_dong_y_fail = ArrayHelper::map(CustomerStatusFailTable::getAllStatusDongYFail(), 'id', 'name');
+$type_online = CustomerTable::TYPE_ONLINE;
 
 $is_online = in_array($model->scenario, [Customer::SCENARIO_ONLINE, Customer::SCENARIO_ADMIN]);
 $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCENARIO_CLINIC]);
@@ -125,15 +129,26 @@ $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCE
                     'id' => 'select-ward',
                 ]) ?>
             </div>
-        </div>
-        <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
-        <?php if ($model->scenario === Customer::SCENARIO_ADMIN) { ?>
-            <div class="row">
-                <div class="col-md-6 col-12">
-                    <?= $form->field($model, 'type')->dropDownList(CustomerTable::TYPE, []) ?>
-                </div>
+            <div class="col-12">
+                <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
             </div>
-        <?php } ?>
+            <?php if ($model->scenario === Customer::SCENARIO_ADMIN) { ?>
+                <div class="col-md-6 col-12">
+                    <?= $form->field($model, 'type')->dropDownList(CustomerTable::TYPE, [
+                        'id' => 'select-type'
+                    ]) ?>
+                </div>
+                <div class="col-md-6 col-12 permission-user is-online"
+                     style="display: <?= $model->type == null || $model->type == $type_online ? 'block' : 'none' ?>">
+                    <?= Select2::widget([
+                        'model' => $model,
+                        'attribute' => 'permission_user',
+                        'data' => ArrayHelper::map(User::getUserByRole('sales_online', [User::tableName() . '.id', UserProfile::tableName() . '.fullname']), 'id', 'fullname'),
+                        'options' => []
+                    ]) ?>
+                </div>
+            <?php } ?>
+        </div>
         <hr>
         <h5 class="form-group">Thông tin hệ thống</h5>
         <?php
@@ -144,46 +159,51 @@ $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCE
         ?>
         <div class="row">
             <?php if ($is_online) { ?>
-                <div class="col-md-6 col-12">
+                <div class="col-md-6 col-12 agency is-online"
+                     style="display: <?= $model->scenario == Customer::SCENARIO_ONLINE || $model->type == Customer::TYPE_ONLINE ? 'block' : 'none' ?>">
                     <?= $form->field($model, 'agency')->dropDownList(ArrayHelper::map(CustomerAgencyTable::getAllAgency(), 'id', 'name'), [
                         'prompt' => CustomerModule::t('customer', 'Chọn agency...'),
                         'class' => 'form-control load-data-on-change',
+                        'id' => 'agency',
                         'load-data-url' => Url::toRoute(['/customer/customer-origin/get-origin-by-agency']),
-                        'load-data-element' => '#select-origin',
+                        'load-data-element' => '#origin',
                         'load-data-key' => 'agency',
                         'load-data-method' => 'GET',
-                        'load-data-callback' => '$("#select-fanpage").find("option[value!=\'\']").remove();'
+                        'load-data-callback' => '$("#fanpage-id").find("option[value!=\'\']").remove();'
                     ])->label(CustomerModule::t('customer', 'Agency')) ?>
                 </div>
-                <div class="col-md-6 col-12">
+                <div class="col-md-6 col-12 origin is-online"
+                     style="display: <?= $model->scenario == Customer::SCENARIO_ONLINE || $model->type == Customer::TYPE_ONLINE ? 'block' : 'none' ?>">
                     <?= $form->field($model, 'origin')->dropDownList(ArrayHelper::map(CustomerOriginTable::getOriginByAgency($model->agency), 'id', 'name'), [
                         'prompt' => CustomerModule::t('customer', 'Chọn nguồn trực tuyến...'),
-                        'id' => 'select-origin',
+                        'id' => 'origin',
                         'class' => 'form-control load-data-on-change',
                         'load-data-url' => Url::toRoute(['/customer/customer-fanpage/get-fanpage-by-origin']),
-                        'load-data-element' => '#select-fanpage',
+                        'load-data-element' => '#fanpage-id',
                         'load-data-key' => 'origin',
                         'load-data-method' => 'GET'
                     ])->label(CustomerModule::t('customer', 'Nguồn trực tuyến')) ?>
                 </div>
-                <div class="col-md-6 col-12">
+                <div class="col-md-6 col-12 fanpage-id is-online"
+                     style="display: <?= $model->scenario == Customer::SCENARIO_ONLINE || $model->type == Customer::TYPE_ONLINE ? 'block' : 'none' ?>">
                     <?= $form->field($model, 'fanpage_id')->dropDownList(ArrayHelper::map(CustomerFanpageTable::getFanpageByOrigin($model->origin), 'id', 'name'), [
                         'prompt' => CustomerModule::t('customer', 'Chọn fanpage facebook...'),
-                        'id' => 'select-fanpage'
+                        'id' => 'fanpage-id'
                     ]) ?>
                 </div>
-                <div class="col-md-6 col-12">
+                <div class="col-md-6 col-12 status-call is-online"
+                     style="display: <?= $model->scenario == Customer::SCENARIO_ONLINE || $model->type == Customer::TYPE_ONLINE ? 'block' : 'none' ?>">
                     <?= $form->field($model, 'status_call')->dropDownList(ArrayHelper::map(CustomerStatusCallTable::getAllStatusCall(), 'id', 'name'), [
-                        'id' => 'status_call',
+                        'id' => 'status-call',
                         'prompt' => CustomerModule::t('customer', 'Trạng thái gọi...')
                     ]) ?>
                 </div>
                 <div class="col-12 customer-status-call-fail"
                      style="display: <?= $model->status_call != null && !in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
                     <div class="row">
-                        <div class="col-md-6 col-12">
+                        <div class="col-md-6 col-12 remind-call">
                             <?php
-                            if ($model->status_fail == null) {
+                            if ($model->status_fail == null && $model->remind_call == null) {
                                 $model->remind_call = true;
                             }
                             echo $form->field($model, 'remind_call')->checkbox([
@@ -211,15 +231,16 @@ $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCE
                                 ]
                             ]) ?>
                         </div>
-                        <div class="col-md-6 col-12">
+                        <div class="col-md-6 col-12 status-fail">
                             <?= $form->field($model, 'status_fail')->dropDownList(ArrayHelper::map(CustomerStatusFailTable::getAllStatusCallFail(), 'id', 'name'), [
-                                'prompt' => CustomerModule::t('customer', 'Lý do fail...')
+                                'prompt' => CustomerModule::t('customer', 'Lý do fail...'),
+                                'id' => 'status-fail'
                             ]) ?>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-12 customer-status-call-success"
-                     style="display: <?= $model->status_call != null && in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
+                <div class="col-md-6 col-12 time-lich-hen customer-status-call-success"
+                     style="display: <?= $model->type == Customer::TYPE_ONLINE && $model->status_call != null && in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
                     <?php
                     if ($model->time_lich_hen != null) {
                         $model->time_lich_hen = is_numeric($model->time_lich_hen) ? date('d-m-Y H:i', $model->time_lich_hen) : $model->time_lich_hen;
@@ -236,18 +257,25 @@ $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCE
                     ]) ?>
                 </div>
             <?php } ?>
-            <div class="col-md-6 col-12 customer-status-call-success"
-                 style="display: <?= $model->status_call != null && in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
+            <div class="col-md-6 col-12 co-so customer-status-call-success"
+                 style="display: <?= ($model->scenario === Customer::SCENARIO_ADMIN) ||
+                 ($model->scenario === Customer::SCENARIO_ONLINE && $model->status_call != null && in_array($model->status_call, $status_call_accept)) ||
+                 ($model->scenario == Customer::SCENARIO_CLINIC) ? 'block' : 'none' ?>;">
+                <?php
+                if (isset(Yii::$app->user->identity->co_so)) $model->co_so = Yii::$app->user->identity->co_so;
+                ?>
                 <?= $form->field($model, 'co_so')->dropDownList(ArrayHelper::map(CustomerCoSoTable::getAllCoSo(), 'id', 'name'), [
-                    'prompt' => CustomerModule::t('customer', 'Chọn cơ sở...')
+                    'prompt' => CustomerModule::t('customer', 'Chọn cơ sở...'),
+                    'id' => 'co-so'
                 ]) ?>
             </div>
             <?php if ($is_clinic) { ?>
                 <div class="col-12 clinic-content"
-                     style="display: <?= ($model->primaryKey == null && $model->scenario !== Customer::SCENARIO_ADMIN) || in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
+                     style="display: <?= $model->scenario == Customer::SCENARIO_CLINIC ||
+                     ($model->scenario == Customer::SCENARIO_ADMIN && ($model->type == Customer::TYPE_DIRECT || ($model->type == Customer::TYPE_ONLINE && in_array($model->status_call, $status_call_accept)))) ? 'block' : 'none' ?>;">
                     <div class="row">
-                        <?php if ($model->primaryKey != null || $model->scenario === Customer::SCENARIO_ADMIN) { ?>
-                            <div class="col-md-6 col-12">
+                        <?php if ($model->type === Customer::TYPE_ONLINE && in_array($model->status_call, $status_call_accept)) { ?>
+                            <div class="col-md-6 col-12 status-dat-hen">
                                 <?= $form->field($model, 'status_dat_hen')->dropDownList(ArrayHelper::map(CustomerStatusDatHenTable::getAllDatHen(), 'id', 'name'), [
                                     'id' => 'status-dat-hen',
                                     'prompt' => 'Trạng thái đặt hẹn...'
@@ -255,9 +283,9 @@ $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCE
                             </div>
                         <?php } ?>
                         <div class="col-12 status-dat-hen-den"
-                             style="display: <?= ($model->primaryKey == null && $model->scenario !== Customer::SCENARIO_ADMIN) || in_array($model->status_dat_hen, $status_dat_hen_den) ? 'block' : 'none' ?>;">
+                             style="display: <?= $model->scenario == Customer::SCENARIO_CLINIC || ($model->scenario == Customer::SCENARIO_ADMIN && $model->type == Customer::TYPE_DIRECT) || in_array($model->status_dat_hen, $status_dat_hen_den) ? 'block' : 'none' ?>;">
                             <div class="row">
-                                <div class="col-md-6 col-12">
+                                <div class="col-md-6 col-12 time-come">
                                     <?php
                                     if ($model->time_come != null) {
                                         $model->time_come = date('d-m-Y H:i', $model->time_come);
@@ -270,20 +298,21 @@ $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCE
                                             'autoclose' => true,
                                             'format' => 'dd-mm-yyyy hh:ii',
                                             'todayHighLight' => true,
-                                            'startDate' => '+0d'
+                                            'startDate' => '+0d',
                                         ]
                                     ]) ?>
                                 </div>
-                                <div class="col-md-6 col-12">
+                                <div class="col-md-6 col-12 status-dong-y">
                                     <?= $form->field($model, 'status_dong_y')->dropDownList(ArrayHelper::map(CustomerStatusDongYTable::getAll(), 'id', 'name'), [
                                         'prompt' => 'Trạng thái đồng ý...',
-                                        'id' => 'status_dong_y'
+                                        'id' => 'status-dong-y'
                                     ]) ?>
                                 </div>
                                 <div class="col-md-6 col-12 status-dong-y-fail"
                                      style="display: <?= $model->status_dong_y == null || in_array($model->status_dong_y, $status_dong_y) ? 'none' : 'block' ?>">
                                     <?= $form->field($model, 'status_dong_y_fail')->dropDownList($status_dong_y_fail, [
-                                        'prompt' => 'Lý do chốt fail...'
+                                        'prompt' => 'Lý do chốt fail...',
+                                        'id' => 'status-dong-y-fail'
                                     ]) ?>
                                 </div>
                             </div>
@@ -292,14 +321,20 @@ $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCE
                 </div>
             <?php } ?>
             <?php if ($is_online) { ?>
-                <div class="col-12">
-                    <?= $form->field($model, 'sale_online_note')->textarea(['maxlength' => true, 'rows' => 5]) ?>
+                <div class="col-12 is-online sale-online-note">
+                    <?= $form->field($model, 'sale_online_note')->textarea([
+                        'maxlength' => true, 'rows' => 5,
+                        'id' => 'sale-online-note'
+                    ]) ?>
                 </div>
             <?php } ?>
             <?php if ($is_clinic) { ?>
-                <div class="col-12 clinic-content"
+                <div class="col-12 clinic-content direct-sale-note"
                      style="display: <?= ($model->primaryKey == null && $model->scenario !== Customer::SCENARIO_ADMIN) || in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
-                    <?= $form->field($model, 'direct_sale_note')->textarea(['maxlength' => true, 'rows' => 5]) ?>
+                    <?= $form->field($model, 'direct_sale_note')->textarea([
+                        'maxlength' => true, 'rows' => 5,
+                        'id' => 'direct-sale-note'
+                    ]) ?>
                 </div>
             <?php } ?>
         </div>
@@ -317,6 +352,7 @@ $script = <<< JS
 var status_call_accept = $json_status_call_accept;
 var status_dat_hen_den = $json_status_dat_hen_den;
 var status_dong_y = $json_status_dong_y;
+var type_online = $type_online;
 JS;
 $this->registerJs($script, \yii\web\View::POS_HEAD);
 

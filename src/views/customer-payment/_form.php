@@ -19,6 +19,13 @@ use modava\customer\models\table\CustomerCoSoTable;
 /* @var $form yii\widgets\ActiveForm */
 
 $model->payment_at = ($model->payment_at != null && is_numeric($model->payment_at)) ? date('d-m-Y H:i', $model->payment_at) : date('d-m-Y H:i');
+$customerDongY = CustomerTable::getCustomerDongY();
+$optionsCustomerDongY = [];
+foreach ($customerDongY as $customer_dong_y) {
+    $optionsCustomerDongY[$customer_dong_y->primaryKey] = [
+        'data-co-so' => $customer_dong_y->co_so
+    ];
+}
 ?>
 <?= ToastrWidget::widget(['key' => 'toastr-' . $model->toastr_key . '-form']) ?>
     <div class="customer-payment-form">
@@ -29,7 +36,7 @@ $model->payment_at = ($model->payment_at != null && is_numeric($model->payment_a
                     <?= Select2::widget([
                         'model' => $model,
                         'attribute' => 'customer_id',
-                        'data' => ArrayHelper::map(CustomerTable::getCustomerDongY(), 'id', 'name'),
+                        'data' => ArrayHelper::map($customerDongY, 'id', 'name'),
                         'options' => [
                             'id' => 'select-customer',
                             'class' => 'form-control load-data-on-change',
@@ -37,7 +44,8 @@ $model->payment_at = ($model->payment_at != null && is_numeric($model->payment_a
                             'load-data-url' => Url::toRoute(['/customer/customer-order/get-order-by-customer']),
                             'load-data-key' => 'customer_id',
                             'load-data-callback' => '$("#select-order").trigger("change");',
-                            'load-data-method' => 'GET'
+                            'load-data-method' => 'GET',
+                            'options' => $optionsCustomerDongY
                         ]
                     ]) ?>
                 </div>
@@ -67,7 +75,13 @@ $model->payment_at = ($model->payment_at != null && is_numeric($model->payment_a
                 ]) ?>
             </div>
             <div class="col-md-6 col-12">
-                <?php if ($model->co_so == null) $model->co_so = isset(Yii::$app->user->identity->co_so) ? Yii::$app->user->identity->co_so : null; ?>
+                <?php
+                if ($model->co_so == null) {
+                    if (isset(Yii::$app->user->identity->co_so)) $model->co_so = Yii::$app->user->identity->co_so;
+                    if ($model->orderHasOne != null) $model->co_so = $model->orderHasOne->customerHasOne->co_so;
+                    else $model->co_so = null;
+                }
+                ?>
                 <?= $form->field($model, 'co_so')->dropDownList(ArrayHelper::map(CustomerCoSoTable::getAllCoSo(), 'id', 'name'), []) ?>
             </div>
         </div>
@@ -184,7 +198,7 @@ function number(number, fix = 1){
 function getOrdertInfo(order_id){
     $.get('$url_get_payment_info', {order_id: order_id, payment_id: '$payment_id'}, res => {
         $('#order-info').html(res.order_info);
-        $('#payment-price').val('');
+        // $('#payment-price').val('');
         if(res.code === 200){
             $('#payment-tong-cong').attr('data', res.total).html(res.total);
             $('#payment-chiet-khau').attr('data', res.discount).html(res.discount);
@@ -208,7 +222,8 @@ function handlePayment(){
         deposit = parseFloat($('#payment-dat-coc').attr('data')) || 0,
         discount = parseFloat($('#payment-chiet-khau').attr('data')) || 0,
         payment = parseFloat($('#payment-thanh-toan').attr('data')) || 0,
-        rest = parseFloat(total - (discount + deposit + payment)) 
+        rest = parseFloat(total - (discount + deposit + payment));
+    console.log(price);
     if(price > rest) {
         price = rest;
     }
@@ -235,6 +250,10 @@ $('body').on('change', '.ipt-payment', function(){
 }).on('change', '#select-order', function(){
     var order_id = $(this).val();
     getOrdertInfo(order_id)
+}).on('change', '#select-customer', function(){
+    var co_so = $(this).find('option:selected').attr('data-co-so') || null;
+    $('#customerpayment-co_so').find('option').prop('selected', false).removeAttr('selected');
+    $('#customerpayment-co_so').find('option[value="'+ co_so +'"]').prop('selected', true).attr('selected', 'selected');
 });
 $(function(){
     $('#select-customer').trigger('change');

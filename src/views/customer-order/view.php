@@ -1,5 +1,6 @@
 <?php
 
+use modava\auth\models\User;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
@@ -27,8 +28,20 @@ $this->params['breadcrumbs'][] = $this->title;
         </h4>
         <p>
             <?php if ($model->status == CustomerOrderTable::STATUS_DISABLED) { ?>
-                <?php /*= Html::a('<i class="glyphicon glyphicon-list-alt"></i> ' . CustomerModule::t('customer', 'Treatment Schedule'), ['/customer/customer-treatment-schedule/create', 'order_id' => $model->primaryKey], ['class' => 'btn btn-warning'])*/ ?>
-                <?= Html::a('<i class="glyphicon glyphicon-credit-card"></i> ' . CustomerModule::t('customer', 'Payment'), ['/customer/customer-payment/index', 'order_id' => $model->primaryKey], ['class' => 'btn btn-success']) ?>
+                <?php
+                /*if (Yii::$app->user->can(User::DEV) ||
+                    Yii::$app->user->can('customer') ||
+                    Yii::$app->user->can('customerCustomer-treatment-scheduleCreate')) {
+                    echo Html::a('<i class="glyphicon glyphicon-list-alt"></i> ' . CustomerModule::t('customer', 'Treatment Schedule'), ['/customer/customer-treatment-schedule/create', 'order_id' => $model->primaryKey], ['class' => 'btn btn-warning']);
+                }*/
+                ?>
+                <?php
+                if (Yii::$app->user->can(User::DEV) ||
+                    Yii::$app->user->can('customer') ||
+                    Yii::$app->user->can('customerCustomer-paymentIndex')) {
+                    echo Html::a('<i class="glyphicon glyphicon-credit-card"></i> ' . CustomerModule::t('customer', 'Payment'), ['/customer/customer-payment/index', 'order_id' => $model->primaryKey], ['class' => 'btn btn-success']);
+                }
+                ?>
             <?php } ?>
             <a class="btn btn-outline-light" href="<?= Url::to(['create']); ?>"
                title="<?= CustomerModule::t('customer', 'Create'); ?>">

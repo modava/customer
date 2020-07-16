@@ -1,5 +1,5 @@
 $(function(){
-    $('#status_call').on('change', function(){
+    $('#status-call').on('change', function(){
         var status = parseInt($(this).val()) || null;
         if(status == null){
             $('.customer-status-call-success, .customer-status-call-fail').hide().find('.has-error').removeClass('has-error').find('.help-block').html('');
