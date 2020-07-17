@@ -273,7 +273,6 @@ class Customer extends CustomerTable
             /* SALES ONLINE */
             [['status_call'], 'required', 'on' => [self::SCENARIO_ONLINE]],
             [['sale_online_note'], 'string', 'max' => 255, 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_ONLINE]],
-            [['direct_sale_note'], 'string', 'max' => 255, 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_CLINIC]],
             [['fanpage_id', 'status_call', 'status_fail', 'co_so'], 'integer', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_ONLINE]],
             [['co_so', 'time_lich_hen'], 'required', 'when' => function () use ($status_call_dathen) {
                 return $this->status_call != null && in_array($this->status_call, $status_call_dathen);
@@ -298,13 +297,23 @@ class Customer extends CustomerTable
             [['permission_user'], 'required', 'on' => [self::SCENARIO_ADMIN]],
             [['permission_user'], 'integer', 'on' => [self::SCENARIO_ADMIN]],
             /* CLINIC */
+            [['direct_sale'], 'required', 'when' => function () use ($status_dat_hen_den) {
+                return $this->type != self::TYPE_ONLINE || ($this->status_dat_hen != null && in_array($this->status_dat_hen, $status_dat_hen_den));
+            }, 'whenClient' => "function(){
+                var type = parseInt($('#select-type').val()) || null,
+                    status_dat_hen = parseInt($('#status-dat-hen').val()) || null;
+                return type != '" . self::TYPE_ONLINE . "' || " . json_encode(array_values($status_dat_hen_den)) . ".includes(status_dat_hen);
+            }", 'on' => [self::SCENARIO_CLINIC, self::SCENARIO_ADMIN]],
+            [['direct_sale'], 'integer', 'on' => [self::SCENARIO_CLINIC, self::SCENARIO_ADMIN]],
+            [['direct_sale_note'], 'string', 'max' => 255, 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_CLINIC]],
             [['co_so'], 'required', 'on' => [self::SCENARIO_CLINIC]],
             [['status_dong_y', 'time_come'], 'required', 'when' => function () use ($status_call_dathen, $status_dat_hen_den) {
-                return ($this->type === self::TYPE_ONLINE && in_array($this->status_call, $status_call_dathen) && in_array($this->status_dat_hen, $status_dat_hen_den)) || ($this->type == self::TYPE_DIRECT);
+                return $this->scenario == self::SCENARIO_CLINIC ||
+                    ($this->scenario == self::SCENARIO_ADMIN && ($this->type === self::TYPE_ONLINE && in_array($this->status_call, $status_call_dathen) && in_array($this->status_dat_hen, $status_dat_hen_den)) || ($this->type == self::TYPE_DIRECT));
             }, 'whenClient' => "function(){
                 var type = parseInt($('#select-type').val()) || null,
                     status_call = parseInt($('#status-call').val()) || null;
-                return (type === " . self::TYPE_ONLINE . " && " . json_encode(array_values($status_call_dathen)) . ".includes(status_call) && " . json_encode(array_values($status_dat_hen_den)) . ".includes($('#status-dat-hen').val())) || (type === " . self::TYPE_DIRECT . ");
+                return '" . $this->scenario . "' == '" . self::SCENARIO_CLINIC . "' || ('" . $this->scenario . "'=='" . self::SCENARIO_ADMIN . "' && (type === " . self::TYPE_ONLINE . " && " . json_encode(array_values($status_call_dathen)) . ".includes(status_call) && " . json_encode(array_values($status_dat_hen_den)) . ".includes($('#status-dat-hen').val())) || (type === " . self::TYPE_DIRECT . "));
             }", 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_CLINIC]],
             [['status_dat_hen'], 'required', 'when' => function () use ($status_call_dathen) {
                 return in_array($this->status_call, $status_call_dathen);

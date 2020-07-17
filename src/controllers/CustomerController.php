@@ -27,6 +27,9 @@ class CustomerController extends MyController
     {
         $user_sales_online = KeyValueTable::getValueByKey('ROLE_SALES_ONLINE');
         $user_direct = KeyValueTable::getValueByKey('ROLE_DIRECT');
+        $user_direct_sales = KeyValueTable::getValueByKey('ROLE_DIRECT_SALES');
+        Yii::$app->view->params['user_sales_online'] = $user_sales_online;
+        Yii::$app->view->params['user_direct_sales'] = $user_direct_sales;
         if (Yii::$app->user->can(User::DEV)) $this->s = Customer::SCENARIO_ADMIN;
         else if ($user_sales_online != null && Yii::$app->user->can($user_sales_online)) $this->s = Customer::SCENARIO_ONLINE;
         else if ($user_direct != null && Yii::$app->user->can($user_direct)) $this->s = Customer::SCENARIO_CLINIC;

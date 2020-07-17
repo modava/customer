@@ -47,6 +47,9 @@ $type_online = CustomerTable::TYPE_ONLINE;
 
 $is_online = in_array($model->scenario, [Customer::SCENARIO_ONLINE, Customer::SCENARIO_ADMIN]);
 $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCENARIO_CLINIC]);
+
+$user_sales_online = $this->params['user_sales_online'] ?: null;
+$user_direct_sales = $this->params['user_direct_sales'] ?: null;
 ?>
 <?= ToastrWidget::widget(['key' => 'toastr-' . $model->toastr_key . '-form']) ?>
     <div class="customer-form">
@@ -143,7 +146,7 @@ $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCE
                     <?= Select2::widget([
                         'model' => $model,
                         'attribute' => 'permission_user',
-                        'data' => ArrayHelper::map(User::getUserByRole('sales_online', [User::tableName() . '.id', UserProfile::tableName() . '.fullname']), 'id', 'fullname'),
+                        'data' => ArrayHelper::map(User::getUserByRole($user_sales_online, [User::tableName() . '.id', UserProfile::tableName() . '.fullname']), 'id', 'fullname'),
                         'options' => []
                     ]) ?>
                 </div>
@@ -302,6 +305,14 @@ $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCE
                                         ]
                                     ]) ?>
                                 </div>
+                                <div class="col-md-6 col-12 direct-sale">
+                                    <?= Select2::widget([
+                                        'model' => $model,
+                                        'attribute' => 'direct_sale',
+                                        'data' => ArrayHelper::map(User::getUserByRole($user_direct_sales, [User::tableName() . '.id', UserProfile::tableName() . '.fullname']), 'id', 'fullname'),
+                                        'options' => []
+                                    ]) ?>
+                                </div>
                                 <div class="col-md-6 col-12 status-dong-y">
                                     <?= $form->field($model, 'status_dong_y')->dropDownList(ArrayHelper::map(CustomerStatusDongYTable::getAll(), 'id', 'name'), [
                                         'prompt' => 'Trạng thái đồng ý...',
@@ -329,8 +340,8 @@ $is_clinic = in_array($model->scenario, [Customer::SCENARIO_ADMIN, Customer::SCE
                 </div>
             <?php } ?>
             <?php if ($is_clinic) { ?>
-                <div class="col-12 clinic-content direct-sale-note"
-                     style="display: <?= ($model->primaryKey == null && $model->scenario !== Customer::SCENARIO_ADMIN) || in_array($model->status_call, $status_call_accept) ? 'block' : 'none' ?>;">
+                <div class="col-12 status-dat-hen-den direct-sale-note"
+                     style="display: <?= $model->scenario == Customer::SCENARIO_CLINIC || ($model->scenario == Customer::SCENARIO_ADMIN && $model->type == Customer::TYPE_DIRECT) || ($model->scenario == Customer::SCENARIO_ONLINE && in_array($model->status_dat_hen, $status_dat_hen_den)) ? 'block' : 'none' ?>;">
                     <?= $form->field($model, 'direct_sale_note')->textarea([
                         'maxlength' => true, 'rows' => 5,
                         'id' => 'direct-sale-note'
