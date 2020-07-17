@@ -8,6 +8,7 @@ $(function () {
             $('.clinic-content').hide();
         }
     });
+    $('#select-type').trigger('blur');
     /*$('#select-type').on('change', function () {
         var type = parseInt($(this).val()) || null;
         if (type === type_online) {
