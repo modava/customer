@@ -3,6 +3,7 @@
 namespace modava\customer\controllers;
 
 use modava\auth\models\User;
+use modava\customer\models\table\CustomerTable;
 use modava\website\models\table\KeyValueTable;
 use yii\db\Exception;
 use Yii;
@@ -201,6 +202,21 @@ class CustomerController extends MyController
             ]);
         }
         return $this->redirect(['index']);
+    }
+
+    public function actionGetInfo($phone = null)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        try {
+            $customer = CustomerTable::getByPhone($phone);
+            if ($customer == null) return [];
+            return [
+                'ho_ten' => $customer->name,
+                'phu_trach' => $customer->permissionUserHasOne->userProfile->fullname
+            ];
+        } catch (\yii\base\Exception $ex) {
+            return [];
+        }
     }
 
     /**
