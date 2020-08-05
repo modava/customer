@@ -27,6 +27,7 @@ use modava\customer\CustomerModule;
 use modava\select2\Select2;
 use modava\datetime\DateTimePicker;
 
+
 /* @var $this yii\web\View */
 /* @var $model modava\customer\models\Customer */
 /* @var $form yii\widgets\ActiveForm */

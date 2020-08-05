@@ -42,9 +42,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                             {errors}
                                             <div class="row">
                                                 <div class="col-sm-12">
+<<<<<<< HEAD
                                                     <div class="table-responsive">
                                                     {items}
                                                     </div>
+=======
+                                                    {items}
+>>>>>>> 79017f537de57aba1f4fe3d7fff68a53fbf69cfd
                                                 </div>
                                             </div>
                                             <div class="row">
