@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'attribute' => 'language',
                             'value' => function ($model) {
-                                return Yii::$app->getModule('customer')->params['availableLocales'][$model->language];
+                                return Yii::$app->params['availableLocales'][$model->language];
                             },
                         ],
 						'created_at:datetime',

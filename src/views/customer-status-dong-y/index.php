@@ -107,8 +107,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                             [
                                                 'attribute' => 'language',
                                                 'value' => function ($model) {
-                                                    if (!array_key_exists($model->language, Yii::$app->getModule('customer')->params['availableLocales'])) return null;
-                                                    return Yii::$app->getModule('customer')->params['availableLocales'][$model->language];
+                                                    if (!array_key_exists($model->language, Yii::$app->params['availableLocales'])) return null;
+                                                    return Yii::$app->params['availableLocales'][$model->language];
                                                 }
                                             ],
                                             [

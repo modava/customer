@@ -208,6 +208,6 @@ class CustomerFanpageController extends MyController
             return $model;
         }
 
-        throw new NotFoundHttpException(Yii::t('customer', 'The requested page does not exist.'));
+        throw new NotFoundHttpException(CustomerModule::t('customer', 'The requested page does not exist.'));
     }
 }

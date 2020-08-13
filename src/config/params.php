@@ -7,11 +7,6 @@ use modava\customer\models\CustomerStatusCall;
 use modava\customer\models\Customer;
 
 return [
-    'availableLocales' => [
-        'vi' => 'Tiếng Việt',
-        'en' => 'English',
-        'jp' => 'Japan',
-    ],
     'customerName' => 'Customer',
     'customerVersion' => '1.0',
     'sex' => [
